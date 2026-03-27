@@ -106,9 +106,8 @@ async function sbUpload(bucket, path, file, onProgress) {
       }
     };
     xhr.onerror = () => reject(new Error('Erro de rede'));
-    const fd = new FormData();
-    fd.append('', file);
-    xhr.send(fd);
+    xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
+    xhr.send(file);
   });
 }
 
@@ -669,7 +668,13 @@ document.addEventListener('click', e => {
 
 // Notify
 function notify(msg) {
-  const n = document.getElementById('notif');
+  let n = document.getElementById('notif');
+  if (!n) {
+    n = document.createElement('div');
+    n.id = 'notif';
+    n.className = 'notif';
+    document.body.appendChild(n);
+  }
   n.textContent = msg; n.classList.add('show');
   setTimeout(() => n.classList.remove('show'), 2800);
 }
