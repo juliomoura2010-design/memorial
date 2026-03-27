@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memorial</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap');
+
+:root {
+  --cream: #f5f0e8;
+  --parchment: #ede5d4;
+  --warm-brown: #5c4a32;
+  --deep-brown: #3a2e1e;
+  --gold: #c9a84c;
+  --gold-light: #e8c97a;
+  --text: #2e2416;
+  --text-soft: #7a6a55;
+  --shadow: rgba(58,46,30,0.12);
+  --sage: #8a9e8c;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+body {
+  font-family: 'Jost', sans-serif;
+  background: var(--cream);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:9999;opacity:.35;
+}
+
+/* ── SETUP SCREEN ── */
+#setupScreen {
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at 50% 40%, #fff8f0 0%, var(--parchment) 50%, #d8cdb8 100%);
+  padding:24px;
+}
+.setup-box {
+  background:white;border-radius:8px;padding:48px 40px;max-width:560px;width:100%;
+  box-shadow:0 8px 48px var(--shadow);
+}
+.setup-logo {
+  font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:.35em;
+  color:var(--gold);text-transform:uppercase;margin-bottom:8px;text-align:center;
+}
+.setup-title {
+  font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;
+  color:var(--deep-brown);text-align:center;margin-bottom:4px;
+}
+.setup-title em{font-style:italic}
+.setup-sub {
+  font-size:13px;color:var(--text-soft);text-align:center;margin-bottom:36px;
+  line-height:1.6;
+}
+.setup-step {
+  display:flex;align-items:flex-start;gap:16px;margin-bottom:28px;
+  padding:20px;background:var(--cream);border-radius:6px;border-left:3px solid var(--gold);
+}
+.setup-step-num {
+  width:28px;height:28px;border-radius:50%;background:var(--gold);color:white;
+  display:flex;align-items:center;justify-content:center;font-size:12px;
+  font-weight:500;flex-shrink:0;margin-top:2px;
+}
+.setup-step-content h4 {
+  font-size:13px;font-weight:500;color:var(--deep-brown);letter-spacing:.05em;margin-bottom:4px;
+}
+.setup-step-content p {
+  font-size:12px;color:var(--text-soft);line-height:1.6;
+}
+.setup-step-content a {
+  color:var(--gold);text-decoration:none;font-weight:500;
+}
+.setup-step-content code {
+  background:var(--parchment);padding:2px 6px;border-radius:3px;font-size:11px;
+  color:var(--warm-brown);font-family:monospace;
+}
+.form-group{margin-bottom:16px}
+.form-label {
+  display:block;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--text-soft);margin-bottom:6px;
+}
+.form-input,.form-textarea {
+  width:100%;background:var(--cream);border:1px solid var(--parchment);
+  border-radius:3px;padding:12px 16px;font-family:'Jost',sans-serif;
+  font-size:14px;color:var(--text);outline:none;transition:border-color .2s;
+}
+.form-input:focus,.form-textarea:focus{border-color:var(--gold)}
+.form-textarea{resize:vertical;min-height:80px;line-height:1.6}
+.btn-full {
+  width:100%;padding:14px;background:var(--deep-brown);color:var(--gold-light);
+  border:none;border-radius:3px;font-family:'Jost',sans-serif;font-size:12px;
+  letter-spacing:.25em;text-transform:uppercase;cursor:pointer;
+  transition:all .2s;margin-top:8px;
+}
+.btn-full:hover{background:var(--warm-brown)}
+.btn-full:disabled{opacity:.5;cursor:not-allowed}
+.setup-divider {
+  display:flex;align-items:center;gap:12px;margin:20px 0;
+  color:var(--text-soft);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+}
+.setup-divider::before,.setup-divider::after{
+  content:'';flex:1;height:1px;background:var(--parchment);
+}
+
+/* ── LOADING ── */
+#loadingScreen {
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;background:var(--cream);gap:20px;
+}
+.loader-ring {
+  width:48px;height:48px;border:2px solid var(--parchment);
+  border-top-color:var(--gold);border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-text {
+  font-family:'Cormorant Garamond',serif;font-size:16px;font-style:italic;
+  color:var(--text-soft);letter-spacing:.1em;
+}
+
+/* ── ADMIN BAR ── */
+#adminBar {
+  position:fixed;top:0;left:0;right:0;height:48px;
+  background:var(--deep-brown);display:flex;align-items:center;
+  justify-content:space-between;padding:0 24px;z-index:1000;
+  transform:translateY(-100%);transition:transform .4s;
+}
+#adminBar.visible{transform:translateY(0)}
+#adminBar span{color:var(--gold);font-size:11px;letter-spacing:.2em;text-transform:uppercase}
+.admin-actions{display:flex;gap:10px}
+
+/* ── HERO ── */
+.hero {
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;padding:80px 24px 60px;
+  background:radial-gradient(ellipse at 50% 30%,#fff8f0 0%,var(--parchment) 40%,#d8cdb8 100%);
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 20% 80%,rgba(201,168,76,.07) 0%,transparent 50%),
+             radial-gradient(circle at 80% 20%,rgba(201,160,160,.1) 0%,transparent 50%);
+}
+.hero-ornament{
+  font-size:13px;letter-spacing:.4em;color:var(--gold);text-transform:uppercase;
+  margin-bottom:24px;opacity:0;animation:fadeUp 1.2s ease forwards .3s;
+}
+.hero-photo-wrap{
+  position:relative;margin-bottom:36px;
+  opacity:0;animation:fadeUp 1.2s ease forwards .5s;
+}
+.hero-photo-ring{
+  width:200px;height:200px;border-radius:50%;
+  border:2px solid var(--gold);padding:6px;position:relative;
+}
+.hero-photo-ring::before{
+  content:'';position:absolute;inset:-8px;border-radius:50%;
+  border:1px solid rgba(201,168,76,.3);
+}
+.hero-photo-ring::after{
+  content:'';position:absolute;inset:-16px;border-radius:50%;
+  border:1px solid rgba(201,168,76,.15);
+}
+.hero-photo{
+  width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;
+}
+.hero-photo-placeholder{
+  width:100%;height:100%;border-radius:50%;
+  background:linear-gradient(135deg,var(--parchment),#d0c4b0);
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:8px;color:var(--text-soft);
+  font-size:11px;letter-spacing:.08em;cursor:pointer;
+  transition:background .3s;
+}
+.hero-photo-placeholder:hover{background:#cfc3af}
+.hero-photo-placeholder svg{width:30px;height:30px;opacity:.5}
+.hero-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(40px,8vw,70px);font-weight:300;color:var(--deep-brown);
+  line-height:1.1;margin-bottom:8px;opacity:0;animation:fadeUp 1.2s ease forwards .7s;
+}
+.hero-name em{font-style:italic;color:var(--warm-brown)}
+.hero-dates{
+  font-size:12px;letter-spacing:.35em;color:var(--text-soft);
+  margin-bottom:28px;text-transform:uppercase;
+  opacity:0;animation:fadeUp 1.2s ease forwards .9s;
+}
+.hero-divider{
+  width:80px;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);
+  margin:0 auto 28px;opacity:0;animation:fadeIn 1.5s ease forwards 1.1s;
+}
+.hero-quote{
+  font-family:'Cormorant Garamond',serif;font-size:clamp(16px,3vw,21px);
+  font-style:italic;font-weight:300;color:var(--warm-brown);
+  max-width:520px;line-height:1.7;opacity:0;animation:fadeUp 1.2s ease forwards 1.1s;
+}
+
+/* ── SECTIONS ── */
+.section{padding:80px 24px;max-width:1100px;margin:0 auto}
+.section-header{text-align:center;margin-bottom:56px}
+.section-label{font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,5vw,42px);font-weight:300;color:var(--deep-brown)}
+.section-title em{font-style:italic}
+.section-line{width:60px;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);margin:20px auto 0}
+
+/* ── MEMORIES GRID ── */
+.memories-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px}
+.memory-card{
+  background:white;border-radius:4px;overflow:hidden;
+  box-shadow:0 2px 20px var(--shadow);
+  transition:transform .3s,box-shadow .3s;position:relative;
+}
+.memory-card:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(58,46,30,.18)}
+.memory-card-media{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:var(--parchment)}
+video.memory-card-media{background:#1a1a1a}
+.memory-card-body{padding:18px 20px}
+.memory-card-date{font-size:10px;letter-spacing:.25em;color:var(--gold);text-transform:uppercase;margin-bottom:6px}
+.memory-card-caption{font-family:'Cormorant Garamond',serif;font-size:16px;font-style:italic;color:var(--warm-brown);line-height:1.6}
+.card-del-btn{
+  position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;
+  background:rgba(0,0,0,.5);border:none;cursor:pointer;
+  display:none;align-items:center;justify-content:center;
+  color:white;font-size:13px;transition:background .2s;
+}
+.admin-mode .card-del-btn{display:flex}
+.card-del-btn:hover{background:rgba(200,60,60,.8)}
+
+/* ── MESSAGES ── */
+.messages-list{display:flex;flex-direction:column;gap:28px}
+.message-item{display:flex;gap:20px;align-items:flex-start;position:relative}
+.message-item::before{
+  content:'';position:absolute;left:19px;top:42px;bottom:-28px;
+  width:1px;background:linear-gradient(to bottom,var(--parchment),transparent);
+}
+.message-item:last-child::before{display:none}
+.message-avatar{
+  width:38px;height:38px;border-radius:50%;
+  background:linear-gradient(135deg,var(--parchment),#d0c4b0);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--warm-brown);
+  border:1px solid var(--parchment);
+}
+.message-bubble{
+  background:white;border-radius:4px;padding:18px 22px;
+  box-shadow:0 2px 12px var(--shadow);flex:1;
+  border-left:2px solid var(--parchment);position:relative;
+  transition:border-left-color .2s;
+}
+.message-bubble:hover{border-left-color:var(--gold)}
+.message-author{font-size:13px;font-weight:500;color:var(--warm-brown);margin-bottom:3px;letter-spacing:.04em}
+.message-date-tag{font-size:10px;color:var(--text-soft);letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px}
+.message-text{font-family:'Cormorant Garamond',serif;font-size:17px;font-style:italic;color:var(--text);line-height:1.75}
+.msg-del-btn{
+  position:absolute;top:10px;right:10px;background:transparent;
+  border:1px solid rgba(200,60,60,.3);color:#c84040;
+  font-size:10px;letter-spacing:.15em;padding:4px 10px;border-radius:2px;
+  cursor:pointer;display:none;transition:all .2s;font-family:'Jost',sans-serif;
+}
+.admin-mode .msg-del-btn{display:block}
+.msg-del-btn:hover{background:rgba(200,60,60,.1)}
+
+/* ── AUDIO ── */
+.audio-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
+.audio-card{
+  background:white;border-radius:4px;padding:24px;
+  box-shadow:0 2px 16px var(--shadow);position:relative;
+}
+.audio-icon{
+  width:46px;height:46px;border-radius:50%;
+  background:linear-gradient(135deg,var(--parchment),#d0c4b0);
+  display:flex;align-items:center;justify-content:center;margin-bottom:14px;
+}
+.audio-icon svg{width:20px;height:20px;color:var(--warm-brown)}
+.audio-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;color:var(--deep-brown);margin-bottom:4px}
+.audio-label{font-size:10px;letter-spacing:.2em;color:var(--text-soft);text-transform:uppercase;margin-bottom:14px}
+audio{width:100%;height:34px;outline:none}
+.aud-del-btn{
+  position:absolute;top:12px;right:12px;background:transparent;
+  border:1px solid rgba(200,60,60,.3);color:#c84040;
+  font-size:10px;letter-spacing:.15em;padding:4px 10px;border-radius:2px;
+  cursor:pointer;display:none;transition:all .2s;font-family:'Jost',sans-serif;
+}
+.admin-mode .aud-del-btn{display:block}
+.aud-del-btn:hover{background:rgba(200,60,60,.1)}
+
+/* ── EMPTY STATE ── */
+.empty-state{text-align:center;padding:60px 24px;color:var(--text-soft)}
+.empty-state svg{width:46px;height:46px;opacity:.2;margin-bottom:14px}
+.empty-state p{font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;line-height:1.7}
+
+/* ── FAB ── */
+.fab{
+  position:fixed;bottom:28px;right:28px;width:54px;height:54px;
+  border-radius:50%;background:var(--deep-brown);border:none;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 24px var(--shadow);transition:all .3s;z-index:500;
+}
+.fab:hover{transform:scale(1.1);background:var(--warm-brown)}
+.fab svg{width:22px;height:22px;color:var(--gold)}
+.fab-menu{
+  position:fixed;bottom:94px;right:28px;
+  display:flex;flex-direction:column;gap:10px;
+  z-index:500;opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.fab-menu.open{opacity:1;pointer-events:all}
+.fab-item{display:flex;align-items:center;gap:10px;justify-content:flex-end;cursor:pointer}
+.fab-label{
+  background:var(--deep-brown);color:var(--cream);
+  font-size:11px;letter-spacing:.15em;padding:6px 14px;border-radius:2px;white-space:nowrap;
+}
+.fab-btn{
+  width:40px;height:40px;border-radius:50%;background:var(--warm-brown);
+  border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;flex-shrink:0;
+}
+.fab-btn:hover{background:var(--gold)}
+.fab-btn svg{width:17px;height:17px;color:white}
+
+/* ── MODAL ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(30,20,10,.72);
+  backdrop-filter:blur(4px);z-index:2000;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{
+  background:var(--cream);border-radius:6px;padding:36px;
+  max-width:500px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,.3);
+  transform:translateY(20px);transition:transform .3s;
+  max-height:90vh;overflow-y:auto;
+}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--deep-brown);margin-bottom:4px}
+.modal-sub{font-size:11px;letter-spacing:.2em;color:var(--text-soft);text-transform:uppercase;margin-bottom:28px}
+.file-drop{
+  border:1px dashed var(--gold);border-radius:3px;
+  padding:28px;text-align:center;cursor:pointer;
+  transition:background .2s;position:relative;
+}
+.file-drop:hover{background:rgba(201,168,76,.05)}
+.file-drop input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.file-drop-icon{font-size:26px;margin-bottom:8px}
+.file-drop-text{font-size:12px;color:var(--text-soft)}
+.file-drop-text strong{color:var(--warm-brown)}
+.file-preview{margin-top:10px;font-size:11px;color:var(--sage);font-style:italic}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:24px}
+.btn-cancel{
+  background:transparent;color:var(--text-soft);
+  border:1px solid var(--parchment);padding:10px 18px;border-radius:2px;
+  cursor:pointer;font-family:'Jost',sans-serif;font-size:11px;
+  letter-spacing:.15em;text-transform:uppercase;transition:all .2s;
+}
+.btn-cancel:hover{border-color:var(--text-soft)}
+.btn-save{
+  background:var(--deep-brown);color:var(--gold-light);
+  border:none;padding:10px 22px;border-radius:2px;cursor:pointer;
+  font-family:'Jost',sans-serif;font-size:11px;letter-spacing:.2em;
+  text-transform:uppercase;transition:all .2s;
+}
+.btn-save:hover{background:var(--warm-brown)}
+.btn-save:disabled{opacity:.5;cursor:not-allowed}
+
+/* ── PROGRESS BAR ── */
+.progress-wrap{margin-top:10px;display:none}
+.progress-bar{
+  height:3px;background:var(--parchment);border-radius:2px;overflow:hidden;
+}
+.progress-fill{
+  height:100%;background:var(--gold);width:0;
+  transition:width .3s;
+}
+.progress-text{font-size:11px;color:var(--text-soft);margin-top:6px;text-align:center}
+
+/* ── FOOTER ── */
+footer{
+  text-align:center;padding:60px 24px;background:var(--deep-brown);
+}
+.footer-name{
+  font-family:'Cormorant Garamond',serif;font-size:28px;font-style:italic;
+  color:rgba(201,168,76,.6);margin-bottom:10px;font-weight:300;
+}
+.footer-sub{font-size:11px;letter-spacing:.2em;color:rgba(245,240,232,.3)}
+
+/* ── REVEAL ── */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s,transform .8s}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ── NOTIF ── */
+.notif{
+  position:fixed;bottom:28px;left:50%;
+  transform:translateX(-50%) translateY(80px);
+  background:var(--deep-brown);color:var(--gold-light);
+  padding:11px 22px;border-radius:3px;font-size:11px;letter-spacing:.15em;
+  text-transform:uppercase;transition:transform .4s;z-index:9000;pointer-events:none;
+}
+.notif.show{transform:translateX(-50%) translateY(0)}
+
+/* ── ADMIN LOGIN ── */
+.admin-toggle{
+  position:fixed;bottom:28px;left:28px;
+  width:40px;height:40px;border-radius:50%;
+  background:rgba(58,46,30,.15);border:1px solid rgba(201,168,76,.2);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .3s;z-index:400;
+}
+.admin-toggle:hover{background:rgba(58,46,30,.3)}
+.admin-toggle svg{width:16px;height:16px;color:var(--gold);opacity:.6}
+
+/* ── UPLOAD STATUS ── */
+.upload-status{
+  display:none;position:fixed;top:60px;right:20px;
+  background:var(--deep-brown);color:var(--gold-light);
+  padding:12px 20px;border-radius:4px;font-size:12px;
+  letter-spacing:.1em;z-index:3000;max-width:280px;
+}
+.upload-status.show{display:block}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+@media(max-width:600px){
+  .memories-grid{grid-template-columns:1fr}
+  .modal{padding:24px 18px}
+  .fab{bottom:18px;right:18px}
+  .fab-menu{bottom:80px;right:18px}
+  .section{padding:60px 16px}
+  .setup-box{padding:32px 20px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     SETUP SCREEN — aparece apenas na 1ª vez
+════════════════════════════════════════════════ -->
+<div id="setupScreen">
+  <div class="setup-box">
+    <div class="setup-logo">✦ Memorial Web ✦</div>
+    <h1 class="setup-title">Configure seu <em>Memorial</em></h1>
+    <p class="setup-sub">Siga os passos abaixo para conectar o banco de dados gratuito.<br>Feito uma vez só — depois é só usar!</p>
+
+    <div class="setup-step">
+      <div class="setup-step-num">1</div>
+      <div class="setup-step-content">
+        <h4>Crie uma conta gratuita no Supabase</h4>
+        <p>Acesse <a href="https://supabase.com" target="_blank">supabase.com</a> → clique em <strong>Start for free</strong> → crie sua conta com Google ou e-mail.</p>
+      </div>
+    </div>
+
+    <div class="setup-step">
+      <div class="setup-step-num">2</div>
+      <div class="setup-step-content">
+        <h4>Crie um novo projeto</h4>
+        <p>Clique em <strong>New Project</strong> → escolha um nome (ex: <code>memorial</code>) → defina uma senha forte → selecione a região <strong>South America (São Paulo)</strong> → clique em <strong>Create new project</strong>.</p>
+      </div>
+    </div>
+
+    <div class="setup-step">
+      <div class="setup-step-num">3</div>
+      <div class="setup-step-content">
+        <h4>Crie o banco de dados com um clique</h4>
+        <p>No menu lateral, acesse <strong>SQL Editor</strong> → clique em <strong>New query</strong> → cole e execute este código:</p>
+        <div style="margin-top:10px">
+          <button onclick="copySQL()" style="background:var(--gold);border:none;padding:8px 16px;border-radius:3px;font-size:11px;letter-spacing:.15em;cursor:pointer;color:var(--deep-brown);font-family:'Jost',sans-serif;font-weight:500;text-transform:uppercase">
+            📋 Copiar SQL
+          </button>
+          <button onclick="openSQLModal()" style="background:transparent;border:1px solid var(--gold);padding:8px 14px;border-radius:3px;font-size:11px;letter-spacing:.15em;cursor:pointer;color:var(--warm-brown);font-family:'Jost',sans-serif;margin-left:8px;text-transform:uppercase">
+            👁 Ver SQL
+          </button>
+          <span id="sqlCopied" style="font-size:11px;color:var(--sage);margin-left:10px;display:none">✓ Copiado!</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="setup-step">
+      <div class="setup-step-num">4</div>
+      <div class="setup-step-content">
+        <h4>Ative o Storage (para fotos e vídeos)</h4>
+        <p>No menu lateral, vá em <strong>Storage</strong> → clique em <strong>New bucket</strong> → nome: <code>memorial-media</code> → marque <strong>Public bucket</strong> → <strong>Save</strong>.</p>
+      </div>
+    </div>
+
+    <div class="setup-step">
+      <div class="setup-step-num">5</div>
+      <div class="setup-step-content">
+        <h4>Copie suas credenciais</h4>
+        <p>Vá em <strong>Project Settings → API</strong> → copie a <strong>Project URL</strong> e a chave <strong>anon public</strong> e cole abaixo.</p>
+      </div>
+    </div>
+
+    <div class="setup-divider">Suas credenciais</div>
+
+    <div class="form-group">
+      <label class="form-label">Project URL</label>
+      <input type="text" class="form-input" id="sbUrl" placeholder="https://xxxxxxxxxxx.supabase.co">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Anon Public Key</label>
+      <input type="text" class="form-input" id="sbKey" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+    </div>
+
+    <div class="setup-divider">Dados do memorial</div>
+
+    <div class="form-group">
+      <label class="form-label">Nome da pessoa amada</label>
+      <input type="text" class="form-input" id="setupName" placeholder="Nome completo">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Datas (nascimento — falecimento)</label>
+      <input type="text" class="form-input" id="setupDates" placeholder="01/01/1950 – 25/12/2024">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Frase especial</label>
+      <textarea class="form-textarea" id="setupQuote" placeholder="Uma frase, verso ou pensamento..."></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Senha de administrador</label>
+      <input type="password" class="form-input" id="setupPass" placeholder="Para proteger as edições">
+    </div>
+
+    <button class="btn-full" id="setupBtn" onclick="setupMemorial()">✦ Criar Memorial</button>
+    <p style="text-align:center;font-size:11px;color:var(--text-soft);margin-top:16px;line-height:1.6">
+      Já configurou antes? <a href="#" onclick="skipSetup()" style="color:var(--gold)">Entrar diretamente →</a>
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     LOADING
+════════════════════════════════════════════════ -->
+<div id="loadingScreen" style="display:none">
+  <div class="loader-ring"></div>
+  <div class="loader-text">Carregando memórias...</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     MEMORIAL (conteúdo principal)
+════════════════════════════════════════════════ -->
+<div id="memorialApp" style="display:none">
+
+  <!-- Admin Bar -->
+  <div id="adminBar">
+    <span>✦ Modo Admin</span>
+    <div class="admin-actions">
+      <button class="btn-save" onclick="openHeroEdit()">Editar Info</button>
+      <button class="btn-cancel" style="color:var(--gold-light);border-color:rgba(255,255,255,.2)" onclick="logoutAdmin()">Sair</button>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-ornament">✦ In Memoriam ✦</div>
+    <div class="hero-photo-wrap">
+      <div class="hero-photo-ring">
+        <img id="heroImg" class="hero-photo" style="display:none" alt="Foto">
+        <div id="heroPlaceholder" class="hero-photo-placeholder" onclick="if(isAdmin)document.getElementById('heroFileInput').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span id="heroPlaceholderText">Foto</span>
+        </div>
+      </div>
+      <input type="file" id="heroFileInput" accept="image/*" style="display:none" onchange="uploadHeroPhoto(this)">
+    </div>
+    <h1 class="hero-name"><em id="heroName">—</em></h1>
+    <div class="hero-dates" id="heroDates">—</div>
+    <div class="hero-divider"></div>
+    <p class="hero-quote" id="heroQuote">—</p>
+  </section>
+
+  <!-- MEMORIES -->
+  <section class="section reveal">
+    <div class="section-header">
+      <div class="section-label">Galeria</div>
+      <h2 class="section-title">Fotos & <em>Vídeos</em></h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="memories-grid" id="memoriesGrid">
+      <div class="empty-state" id="memoriesEmpty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m21 15-5-5L5 21"/><circle cx="8.5" cy="8.5" r="1.5"/></svg>
+        <p>Nenhuma memória ainda.<br>Adicione fotos e vídeos especiais.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- MESSAGES -->
+  <section class="section reveal" style="background:linear-gradient(to bottom,transparent,rgba(237,229,212,.4),transparent);padding:80px 24px">
+    <div class="section-header">
+      <div class="section-label">Homenagens</div>
+      <h2 class="section-title">Mensagens & <em>Palavras</em></h2>
+      <div class="section-line"></div>
+    </div>
+    <div style="max-width:680px;margin:0 auto">
+      <div class="messages-list" id="messagesList">
+        <div class="empty-state" id="messagesEmpty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <p>Nenhuma mensagem ainda.<br>Deixe palavras de amor e saudade.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AUDIOS -->
+  <section class="section reveal">
+    <div class="section-header">
+      <div class="section-label">Vozes & Sons</div>
+      <h2 class="section-title">Áudios & <em>Músicas</em></h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="audio-grid" id="audiosGrid">
+      <div class="empty-state" id="audiosEmpty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        <p>Nenhum áudio adicionado.<br>Preserve vozes e músicas especiais.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-name" id="footerName">—</div>
+    <div class="footer-sub">Guardado com amor, para sempre.</div>
+  </footer>
+
+  <!-- FAB (só para admin) -->
+  <div id="fabArea" style="display:none">
+    <div class="fab-menu" id="fabMenu">
+      <div class="fab-item" onclick="openModal('photoModal')">
+        <span class="fab-label">Adicionar Foto</span>
+        <button class="fab-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m21 15-5-5L5 21"/><circle cx="8.5" cy="8.5" r="1.5"/></svg></button>
+      </div>
+      <div class="fab-item" onclick="openModal('videoModal')">
+        <span class="fab-label">Adicionar Vídeo</span>
+        <button class="fab-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></button>
+      </div>
+      <div class="fab-item" onclick="openModal('msgModal')">
+        <span class="fab-label">Escrever Mensagem</span>
+        <button class="fab-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+      </div>
+      <div class="fab-item" onclick="openModal('audioModal')">
+        <span class="fab-label">Adicionar Áudio</span>
+        <button class="fab-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></button>
+      </div>
+    </div>
+    <button class="fab" onclick="toggleFab()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="fabIcon">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Admin login toggle (canto inferior esq) -->
+  <button class="admin-toggle" id="adminToggleBtn" onclick="openModal('loginModal')" title="Admin">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 8 0v2"/><path d="M18 14l2 2 4-4"/></svg>
+  </button>
+
+  <!-- Upload Status -->
+  <div class="upload-status" id="uploadStatus"></div>
+
+</div><!-- /memorialApp -->
+
+<!-- ══════════════════════════════════════════════
+     MODALS
+════════════════════════════════════════════════ -->
+
+<!-- Login Admin -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <div class="modal-title">Área do Admin</div>
+    <div class="modal-sub">Acesso restrito</div>
+    <div class="form-group">
+      <label class="form-label">Senha</label>
+      <input type="password" class="form-input" id="loginPass" placeholder="Sua senha de admin" onkeydown="if(event.key==='Enter')loginAdmin()">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('loginModal')">Cancelar</button>
+      <button class="btn-save" onclick="loginAdmin()">Entrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Photo -->
+<div class="modal-overlay" id="photoModal">
+  <div class="modal">
+    <div class="modal-title">Adicionar Foto</div>
+    <div class="modal-sub">Imagem de uma memória especial</div>
+    <div class="form-group">
+      <div class="file-drop">
+        <input type="file" accept="image/*" id="photoFile" onchange="previewFile(this,'photoPreview')">
+        <div class="file-drop-icon">🖼️</div>
+        <div class="file-drop-text"><strong>Clique para escolher</strong> uma imagem</div>
+        <div class="file-preview" id="photoPreview"></div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Legenda</label>
+      <input type="text" class="form-input" id="photoCaption" placeholder="Uma memória especial...">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Data</label>
+      <input type="date" class="form-input" id="photoDate">
+    </div>
+    <div class="progress-wrap" id="photoProgress">
+      <div class="progress-bar"><div class="progress-fill" id="photoProgressFill"></div></div>
+      <div class="progress-text" id="photoProgressText">Enviando...</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('photoModal')">Cancelar</button>
+      <button class="btn-save" id="photoBtnSave" onclick="addPhoto()">Adicionar Foto</button>
+    </div>
+  </div>
+</div>
+
+<!-- Video -->
+<div class="modal-overlay" id="videoModal">
+  <div class="modal">
+    <div class="modal-title">Adicionar Vídeo</div>
+    <div class="modal-sub">Um momento em movimento</div>
+    <div class="form-group">
+      <div class="file-drop">
+        <input type="file" accept="video/*" id="videoFile" onchange="previewFile(this,'videoPreview')">
+        <div class="file-drop-icon">🎬</div>
+        <div class="file-drop-text"><strong>Clique para escolher</strong> um vídeo</div>
+        <div class="file-preview" id="videoPreview"></div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Legenda</label>
+      <input type="text" class="form-input" id="videoCaption" placeholder="Uma lembrança...">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Data</label>
+      <input type="date" class="form-input" id="videoDate">
+    </div>
+    <div class="progress-wrap" id="videoProgress">
+      <div class="progress-bar"><div class="progress-fill" id="videoProgressFill"></div></div>
+      <div class="progress-text" id="videoProgressText">Enviando...</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('videoModal')">Cancelar</button>
+      <button class="btn-save" id="videoBtnSave" onclick="addVideo()">Adicionar Vídeo</button>
+    </div>
+  </div>
+</div>
+
+<!-- Message -->
+<div class="modal-overlay" id="msgModal">
+  <div class="modal">
+    <div class="modal-title">Deixar Mensagem</div>
+    <div class="modal-sub">Palavras que ficam para sempre</div>
+    <div class="form-group">
+      <label class="form-label">Seu nome</label>
+      <input type="text" class="form-input" id="msgAuthor" placeholder="Quem escreve...">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Mensagem</label>
+      <textarea class="form-textarea" id="msgText" placeholder="Escreva suas palavras, memórias, saudades..."></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Data</label>
+      <input type="date" class="form-input" id="msgDate">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('msgModal')">Cancelar</button>
+      <button class="btn-save" onclick="addMessage()">Publicar Mensagem</button>
+    </div>
+  </div>
+</div>
+
+<!-- Audio -->
+<div class="modal-overlay" id="audioModal">
+  <div class="modal">
+    <div class="modal-title">Adicionar Áudio</div>
+    <div class="modal-sub">Uma voz, uma música especial</div>
+    <div class="form-group">
+      <div class="file-drop">
+        <input type="file" accept="audio/*" id="audioFile" onchange="previewFile(this,'audioPreview')">
+        <div class="file-drop-icon">🎵</div>
+        <div class="file-drop-text"><strong>Clique para escolher</strong> (mp3, wav, m4a...)</div>
+        <div class="file-preview" id="audioPreview"></div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Título</label>
+      <input type="text" class="form-input" id="audioTitle" placeholder="Nome da música ou áudio...">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Descrição</label>
+      <input type="text" class="form-input" id="audioDesc" placeholder="Contexto ou quem fala...">
+    </div>
+    <div class="progress-wrap" id="audioProgress">
+      <div class="progress-bar"><div class="progress-fill" id="audioProgressFill"></div></div>
+      <div class="progress-text" id="audioProgressText">Enviando...</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('audioModal')">Cancelar</button>
+      <button class="btn-save" id="audioBtnSave" onclick="addAudio()">Adicionar Áudio</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hero Edit -->
+<div class="modal-overlay" id="heroEditModal">
+  <div class="modal">
+    <div class="modal-title">Editar Memorial</div>
+    <div class="modal-sub">Informações principais</div>
+    <div class="form-group">
+      <label class="form-label">Nome completo</label>
+      <input type="text" class="form-input" id="editName">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Datas</label>
+      <input type="text" class="form-input" id="editDates" placeholder="01/01/1950 – 25/12/2024">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Frase especial</label>
+      <textarea class="form-textarea" id="editQuote"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Foto principal</label>
+      <div class="file-drop">
+        <input type="file" accept="image/*" id="editHeroFile" onchange="previewFile(this,'editHeroPreview')">
+        <div class="file-drop-icon">🖼️</div>
+        <div class="file-drop-text"><strong>Clique para trocar</strong> a foto principal</div>
+        <div class="file-preview" id="editHeroPreview"></div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('heroEditModal')">Cancelar</button>
+      <button class="btn-save" onclick="saveHeroInfo()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- SQL Fallback Modal -->
+<div class="modal-overlay" id="sqlModal">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-title">Código SQL</div>
+    <div class="modal-sub">Selecione tudo e copie (Ctrl+A → Ctrl+C)</div>
+    <textarea id="sqlTextarea" readonly style="width:100%;height:260px;font-family:monospace;font-size:11px;background:#1a1a1a;color:#c9a84c;border:none;border-radius:4px;padding:16px;resize:none;outline:none;line-height:1.6"></textarea>
+    <div class="modal-actions" style="margin-top:16px">
+      <button class="btn-cancel" onclick="closeModal('sqlModal')">Fechar</button>
+      <button class="btn-save" onclick="selectAllSQL()">Selecionar Tudo</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// CONFIG — preenchida pelo usuário no setup
+// ══════════════════════════════════════════════════════════
+let SB_URL = '';
+let SB_KEY = '';
+let ADMIN_PASS = '';
+let isAdmin = false;
+let fabOpen = false;
+
+const SQL_SETUP = `
+-- Tabela de configurações
+create table if not exists memorial_config (
+  id bigint primary key default 1,
+  name text default 'Nome da Pessoa Amada',
+  dates text default '',
+  quote text default '',
+  hero_photo text default '',
+  admin_pass text default 'admin123',
+  constraint single_row check (id = 1)
+);
+insert into memorial_config (id) values (1) on conflict do nothing;
+
+-- Tabela de memórias (fotos e vídeos)
+create table if not exists memorial_memories (
+  id bigint generated always as identity primary key,
+  type text not null,
+  file_url text not null,
+  caption text default '',
+  item_date text default '',
+  created_at timestamptz default now()
+);
+
+-- Tabela de mensagens
+create table if not exists memorial_messages (
+  id bigint generated always as identity primary key,
+  author text not null,
+  message text not null,
+  item_date text default '',
+  created_at timestamptz default now()
+);
+
+-- Tabela de áudios
+create table if not exists memorial_audios (
+  id bigint generated always as identity primary key,
+  title text not null,
+  description text default '',
+  file_url text not null,
+  created_at timestamptz default now()
+);
+
+-- Política de acesso público (leitura)
+alter table memorial_config enable row level security;
+alter table memorial_memories enable row level security;
+alter table memorial_messages enable row level security;
+alter table memorial_audios enable row level security;
+
+create policy "Leitura pública" on memorial_config for select using (true);
+create policy "Escrita pública" on memorial_config for all using (true);
+create policy "Leitura pública" on memorial_memories for select using (true);
+create policy "Escrita pública" on memorial_memories for all using (true);
+create policy "Leitura pública" on memorial_messages for select using (true);
+create policy "Escrita pública" on memorial_messages for all using (true);
+create policy "Leitura pública" on memorial_audios for select using (true);
+create policy "Escrita pública" on memorial_audios for all using (true);
+`.trim();
+
+// ══════════════════════════════════════════════════════════
+// SUPABASE API
+// ══════════════════════════════════════════════════════════
+async function sbFetch(path, opts={}) {
+  const extraHeaders = opts.headers || {};
+  const res = await fetch(SB_URL + path, {
+    ...opts,
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': 'Bearer ' + SB_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation',
+      ...extraHeaders   // permite sobrescrever o Prefer
+    }
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(err);
+  }
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+
+async function sbUpload(bucket, path, file, onProgress) {
+  // Supabase Storage upload via fetch
+  const url = `${SB_URL}/storage/v1/object/${bucket}/${path}`;
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', url);
+    xhr.setRequestHeader('apikey', SB_KEY);
+    xhr.setRequestHeader('Authorization', 'Bearer ' + SB_KEY);
+    xhr.upload.addEventListener('progress', (e) => {
+      if (e.lengthComputable && onProgress) onProgress(Math.round(e.loaded/e.total*100));
+    });
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve(`${SB_URL}/storage/v1/object/public/${bucket}/${path}`);
+      } else {
+        reject(new Error(xhr.responseText));
+      }
+    };
+    xhr.onerror = () => reject(new Error('Erro de rede'));
+    const fd = new FormData();
+    fd.append('', file);
+    xhr.send(fd);
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// SETUP
+// ══════════════════════════════════════════════════════════
+function copySQL() {
+  // Método compatível com qualquer contexto (local, HTTP e HTTPS)
+  const ta = document.createElement('textarea');
+  ta.value = SQL_SETUP;
+  ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try {
+    document.execCommand('copy');
+    document.getElementById('sqlCopied').style.display = 'inline';
+    setTimeout(() => document.getElementById('sqlCopied').style.display = 'none', 2500);
+  } catch(e) {
+    // Fallback: abre modal com o SQL para copiar manualmente
+    openSQLModal();
+  }
+  document.body.removeChild(ta);
+}
+
+async function setupMemorial() {
+  const url = document.getElementById('sbUrl').value.trim().replace(/\/$/, '');
+  const key = document.getElementById('sbKey').value.trim();
+  const name = document.getElementById('setupName').value.trim();
+  const dates = document.getElementById('setupDates').value.trim();
+  const quote = document.getElementById('setupQuote').value.trim();
+  const pass = document.getElementById('setupPass').value.trim();
+
+  // Validações com feedback visual inline
+  if (!url || !key) { showSetupError('Preencha a URL e a chave do Supabase (Passos 1–5).'); return; }
+  if (!url.startsWith('https://')) { showSetupError('A URL deve começar com https://'); return; }
+  if (!name) { showSetupError('Digite o nome da pessoa amada.'); return; }
+  if (!pass) { showSetupError('Defina uma senha de administrador.'); return; }
+
+  SB_URL = url; SB_KEY = key;
+
+  const btn = document.getElementById('setupBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Conectando...';
+  hideSetupError();
+
+  try {
+    // Testa conexão primeiro
+    const testRes = await fetch(`${SB_URL}/rest/v1/memorial_config?id=eq.1&select=id`, {
+      headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+    });
+
+    if (!testRes.ok) {
+      const txt = await testRes.text();
+      if (testRes.status === 401) throw new Error('Chave inválida. Verifique a "anon public key" no Supabase.');
+      if (testRes.status === 404) throw new Error('URL inválida ou tabelas não criadas. Execute o SQL (Passo 3).');
+      throw new Error(`Erro ${testRes.status}: ${txt.substring(0, 100)}`);
+    }
+
+    btn.textContent = '⏳ Salvando dados...';
+
+    // UPSERT — funciona tanto para inserir quanto para atualizar
+    await sbFetch('/rest/v1/memorial_config', {
+      method: 'POST',
+      headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
+      body: JSON.stringify({ id: 1, name, dates, quote, admin_pass: pass })
+    });
+
+    localStorage.setItem('sb_url', url);
+    localStorage.setItem('sb_key', key);
+
+    btn.textContent = '✓ Memorial criado! Abrindo...';
+    setTimeout(() => startApp(), 800);
+
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = '✦ Criar Memorial';
+    showSetupError(e.message);
+  }
+}
+
+function showSetupError(msg) {
+  let el = document.getElementById('setupError');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'setupError';
+    el.style.cssText = 'background:#fff0f0;border:1px solid #e8a0a0;border-radius:4px;padding:12px 16px;font-size:13px;color:#8b2020;line-height:1.5;margin-top:12px';
+    document.getElementById('setupBtn').insertAdjacentElement('afterend', el);
+  }
+  el.textContent = '⚠️ ' + msg;
+  el.style.display = 'block';
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function hideSetupError() {
+  const el = document.getElementById('setupError');
+  if (el) el.style.display = 'none';
+}
+
+function skipSetup() {
+  const url = localStorage.getItem('sb_url');
+  const key = localStorage.getItem('sb_key');
+  if (!url || !key) { notify('Nenhuma configuração salva. Complete o setup.'); return; }
+  SB_URL = url; SB_KEY = key;
+  startApp();
+}
+
+// ══════════════════════════════════════════════════════════
+// START APP
+// ══════════════════════════════════════════════════════════
+async function startApp() {
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('loadingScreen').style.display = 'flex';
+
+  try {
+    const [config, memories, messages, audios] = await Promise.all([
+      sbFetch('/rest/v1/memorial_config?id=eq.1&select=*'),
+      sbFetch('/rest/v1/memorial_memories?select=*&order=created_at.asc'),
+      sbFetch('/rest/v1/memorial_messages?select=*&order=created_at.asc'),
+      sbFetch('/rest/v1/memorial_audios?select=*&order=created_at.asc')
+    ]);
+
+    ADMIN_PASS = config[0]?.admin_pass || 'admin123';
+
+    // Render hero
+    const cfg = config[0] || {};
+    document.getElementById('heroName').textContent = cfg.name || '—';
+    document.getElementById('heroDates').textContent = cfg.dates || '';
+    document.getElementById('heroQuote').textContent = cfg.quote || '';
+    document.getElementById('footerName').textContent = cfg.name || '—';
+
+    if (cfg.hero_photo) {
+      document.getElementById('heroImg').src = cfg.hero_photo;
+      document.getElementById('heroImg').style.display = 'block';
+      document.getElementById('heroPlaceholder').style.display = 'none';
+    }
+
+    // Render content
+    memories.forEach(renderMemory);
+    messages.forEach(renderMessage);
+    audios.forEach(renderAudio);
+
+    updateEmpty('memoriesEmpty', memories.length);
+    updateEmpty('messagesEmpty', messages.length);
+    updateEmpty('audiosEmpty', audios.length);
+
+    document.getElementById('loadingScreen').style.display = 'none';
+    document.getElementById('memorialApp').style.display = 'block';
+    initScrollReveal();
+
+  } catch(e) {
+    document.getElementById('loadingScreen').style.display = 'none';
+    document.getElementById('loadingScreen').innerHTML = `
+      <div style="text-align:center;padding:40px;color:var(--text-soft)">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;margin-bottom:16px">
+          Erro ao conectar ao banco de dados
+        </p>
+        <p style="font-size:12px;margin-bottom:20px">${e.message.substring(0,120)}</p>
+        <button onclick="document.getElementById('loadingScreen').style.display='none';document.getElementById('setupScreen').style.display='flex'" 
+          style="background:var(--gold);border:none;padding:10px 24px;border-radius:3px;cursor:pointer;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:.15em;text-transform:uppercase">
+          ← Voltar ao Setup
+        </button>
+      </div>`;
+    document.getElementById('loadingScreen').style.display = 'flex';
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// ADMIN
+// ══════════════════════════════════════════════════════════
+function loginAdmin() {
+  const pass = document.getElementById('loginPass').value;
+  if (pass === ADMIN_PASS) {
+    isAdmin = true;
+    document.body.classList.add('admin-mode');
+    document.getElementById('adminBar').classList.add('visible');
+    document.getElementById('fabArea').style.display = 'block';
+    document.getElementById('adminToggleBtn').style.display = 'none';
+    document.getElementById('heroPlaceholderText').textContent = 'Clique p/ foto';
+    closeModal('loginModal');
+    notify('Bem-vindo, admin ✦');
+  } else {
+    notify('Senha incorreta');
+  }
+}
+
+function logoutAdmin() {
+  isAdmin = false;
+  document.body.classList.remove('admin-mode');
+  document.getElementById('adminBar').classList.remove('visible');
+  document.getElementById('fabArea').style.display = 'none';
+  document.getElementById('adminToggleBtn').style.display = 'flex';
+  document.getElementById('heroPlaceholderText').textContent = 'Foto';
+  closeFab();
+  notify('Saiu do modo admin');
+}
+
+// ══════════════════════════════════════════════════════════
+// HERO EDIT
+// ══════════════════════════════════════════════════════════
+function openHeroEdit() {
+  document.getElementById('editName').value = document.getElementById('heroName').textContent;
+  document.getElementById('editDates').value = document.getElementById('heroDates').textContent;
+  document.getElementById('editQuote').value = document.getElementById('heroQuote').textContent;
+  openModal('heroEditModal');
+}
+
+async function saveHeroInfo() {
+  const name = document.getElementById('editName').value.trim();
+  const dates = document.getElementById('editDates').value.trim();
+  const quote = document.getElementById('editQuote').value.trim();
+  const heroFile = document.getElementById('editHeroFile').files[0];
+
+  let hero_photo = undefined;
+
+  if (heroFile) {
+    showUploadStatus('Enviando foto...');
+    try {
+      const path = `hero_${Date.now()}.${heroFile.name.split('.').pop()}`;
+      hero_photo = await sbUpload('memorial-media', path, heroFile, null);
+    } catch(e) {
+      notify('Erro ao enviar foto: ' + e.message.substring(0,60));
+      hideUploadStatus();
+      return;
+    }
+    hideUploadStatus();
+  }
+
+  const body = { name, dates, quote };
+  if (hero_photo) body.hero_photo = hero_photo;
+
+  try {
+    await sbFetch('/rest/v1/memorial_config?id=eq.1', {
+      method: 'PATCH',
+      body: JSON.stringify(body)
+    });
+    document.getElementById('heroName').textContent = name;
+    document.getElementById('heroDates').textContent = dates;
+    document.getElementById('heroQuote').textContent = quote;
+    document.getElementById('footerName').textContent = name;
+    if (hero_photo) {
+      document.getElementById('heroImg').src = hero_photo;
+      document.getElementById('heroImg').style.display = 'block';
+      document.getElementById('heroPlaceholder').style.display = 'none';
+    }
+    closeModal('heroEditModal');
+    notify('Memorial atualizado ✦');
+  } catch(e) {
+    notify('Erro: ' + e.message.substring(0,80));
+  }
+}
+
+async function uploadHeroPhoto(input) {
+  if (!isAdmin || !input.files[0]) return;
+  const file = input.files[0];
+  showUploadStatus('Enviando foto principal...');
+  try {
+    const path = `hero_${Date.now()}.${file.name.split('.').pop()}`;
+    const url = await sbUpload('memorial-media', path, file, null);
+    await sbFetch('/rest/v1/memorial_config?id=eq.1', {
+      method: 'PATCH',
+      body: JSON.stringify({ hero_photo: url })
+    });
+    document.getElementById('heroImg').src = url;
+    document.getElementById('heroImg').style.display = 'block';
+    document.getElementById('heroPlaceholder').style.display = 'none';
+    hideUploadStatus();
+    notify('Foto principal atualizada ✦');
+  } catch(e) {
+    hideUploadStatus();
+    notify('Erro: ' + e.message.substring(0,80));
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// ADD PHOTO
+// ══════════════════════════════════════════════════════════
+async function addPhoto() {
+  const file = document.getElementById('photoFile').files[0];
+  if (!file) { notify('Selecione uma imagem'); return; }
+  const caption = document.getElementById('photoCaption').value.trim();
+  const item_date = document.getElementById('photoDate').value;
+
+  setBtn('photoBtnSave', true);
+  showProgress('photoProgress');
+
+  try {
+    const path = `photo_${Date.now()}.${file.name.split('.').pop()}`;
+    const url = await sbUpload('memorial-media', path, file, p => updateProgress('photoProgressFill','photoProgressText', p));
+    const [rec] = await sbFetch('/rest/v1/memorial_memories', {
+      method: 'POST',
+      body: JSON.stringify({ type:'photo', file_url:url, caption, item_date })
+    });
+    renderMemory(rec);
+    updateEmpty('memoriesEmpty', 1);
+    closeModal('photoModal');
+    resetFields(['photoFile','photoCaption','photoDate'], ['photoPreview']);
+    hideProgress('photoProgress');
+    notify('Foto adicionada ✦');
+  } catch(e) {
+    notify('Erro: ' + e.message.substring(0,80));
+    hideProgress('photoProgress');
+  }
+  setBtn('photoBtnSave', false);
+}
+
+// ══════════════════════════════════════════════════════════
+// ADD VIDEO
+// ══════════════════════════════════════════════════════════
+async function addVideo() {
+  const file = document.getElementById('videoFile').files[0];
+  if (!file) { notify('Selecione um vídeo'); return; }
+  const caption = document.getElementById('videoCaption').value.trim();
+  const item_date = document.getElementById('videoDate').value;
+
+  setBtn('videoBtnSave', true);
+  showProgress('videoProgress');
+
+  try {
+    const path = `video_${Date.now()}.${file.name.split('.').pop()}`;
+    const url = await sbUpload('memorial-media', path, file, p => updateProgress('videoProgressFill','videoProgressText', p));
+    const [rec] = await sbFetch('/rest/v1/memorial_memories', {
+      method: 'POST',
+      body: JSON.stringify({ type:'video', file_url:url, caption, item_date })
+    });
+    renderMemory(rec);
+    updateEmpty('memoriesEmpty', 1);
+    closeModal('videoModal');
+    resetFields(['videoFile','videoCaption','videoDate'], ['videoPreview']);
+    hideProgress('videoProgress');
+    notify('Vídeo adicionado ✦');
+  } catch(e) {
+    notify('Erro: ' + e.message.substring(0,80));
+    hideProgress('videoProgress');
+  }
+  setBtn('videoBtnSave', false);
+}
+
+// ══════════════════════════════════════════════════════════
+// ADD MESSAGE
+// ══════════════════════════════════════════════════════════
+async function addMessage() {
+  const author = document.getElementById('msgAuthor').value.trim() || 'Anônimo';
+  const message = document.getElementById('msgText').value.trim();
+  const item_date = document.getElementById('msgDate').value;
+  if (!message) { notify('Escreva uma mensagem'); return; }
+
+  try {
+    const [rec] = await sbFetch('/rest/v1/memorial_messages', {
+      method: 'POST',
+      body: JSON.stringify({ author, message, item_date })
+    });
+    renderMessage(rec);
+    updateEmpty('messagesEmpty', 1);
+    closeModal('msgModal');
+    resetFields(['msgAuthor','msgText','msgDate'], []);
+    notify('Mensagem guardada ✦');
+  } catch(e) {
+    notify('Erro: ' + e.message.substring(0,80));
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// ADD AUDIO
+// ══════════════════════════════════════════════════════════
+async function addAudio() {
+  const file = document.getElementById('audioFile').files[0];
+  if (!file) { notify('Selecione um arquivo de áudio'); return; }
+  const title = document.getElementById('audioTitle').value.trim() || file.name;
+  const description = document.getElementById('audioDesc').value.trim();
+
+  setBtn('audioBtnSave', true);
+  showProgress('audioProgress');
+
+  try {
+    const path = `audio_${Date.now()}.${file.name.split('.').pop()}`;
+    const url = await sbUpload('memorial-media', path, file, p => updateProgress('audioProgressFill','audioProgressText', p));
+    const [rec] = await sbFetch('/rest/v1/memorial_audios', {
+      method: 'POST',
+      body: JSON.stringify({ title, description, file_url:url })
+    });
+    renderAudio(rec);
+    updateEmpty('audiosEmpty', 1);
+    closeModal('audioModal');
+    resetFields(['audioFile','audioTitle','audioDesc'], ['audioPreview']);
+    hideProgress('audioProgress');
+    notify('Áudio adicionado ✦');
+  } catch(e) {
+    notify('Erro: ' + e.message.substring(0,80));
+    hideProgress('audioProgress');
+  }
+  setBtn('audioBtnSave', false);
+}
+
+// ══════════════════════════════════════════════════════════
+// DELETE
+// ══════════════════════════════════════════════════════════
+async function deleteMemory(id) {
+  if (!confirm('Remover esta memória?')) return;
+  await sbFetch(`/rest/v1/memorial_memories?id=eq.${id}`, { method: 'DELETE' });
+  document.querySelector(`.memory-card[data-id="${id}"]`)?.remove();
+  notify('Removido');
+}
+
+async function deleteMessage(id) {
+  if (!confirm('Remover esta mensagem?')) return;
+  await sbFetch(`/rest/v1/memorial_messages?id=eq.${id}`, { method: 'DELETE' });
+  document.querySelector(`.message-item[data-id="${id}"]`)?.remove();
+  notify('Mensagem removida');
+}
+
+async function deleteAudio(id) {
+  if (!confirm('Remover este áudio?')) return;
+  await sbFetch(`/rest/v1/memorial_audios?id=eq.${id}`, { method: 'DELETE' });
+  document.querySelector(`.audio-card[data-id="${id}"]`)?.remove();
+  notify('Áudio removido');
+}
+
+// ══════════════════════════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════════════════════════
+function renderMemory(m) {
+  document.getElementById('memoriesEmpty').style.display = 'none';
+  const card = document.createElement('div');
+  card.className = 'memory-card';
+  card.dataset.id = m.id;
+  const dateStr = m.item_date ? formatDate(m.item_date) : '';
+  const media = m.type === 'photo'
+    ? `<img class="memory-card-media" src="${m.file_url}" alt="${m.caption||''}" loading="lazy">`
+    : `<video class="memory-card-media" src="${m.file_url}" controls></video>`;
+  card.innerHTML = `
+    ${media}
+    <div class="memory-card-body">
+      ${dateStr ? `<div class="memory-card-date">${dateStr}</div>` : ''}
+      ${m.caption ? `<div class="memory-card-caption">${m.caption}</div>` : ''}
+    </div>
+    <button class="card-del-btn" onclick="deleteMemory(${m.id})">✕</button>`;
+  document.getElementById('memoriesGrid').appendChild(card);
+}
+
+function renderMessage(m) {
+  document.getElementById('messagesEmpty').style.display = 'none';
+  const item = document.createElement('div');
+  item.className = 'message-item';
+  item.dataset.id = m.id;
+  const initial = (m.author||'A').charAt(0).toUpperCase();
+  const dateStr = m.item_date ? formatDate(m.item_date) : '';
+  item.innerHTML = `
+    <div class="message-avatar">${initial}</div>
+    <div class="message-bubble">
+      <div class="message-author">${m.author}</div>
+      ${dateStr ? `<div class="message-date-tag">${dateStr}</div>` : ''}
+      <div class="message-text">${m.message}</div>
+      <button class="msg-del-btn" onclick="deleteMessage(${m.id})">✕ Remover</button>
+    </div>`;
+  document.getElementById('messagesList').appendChild(item);
+}
+
+function renderAudio(a) {
+  document.getElementById('audiosEmpty').style.display = 'none';
+  const card = document.createElement('div');
+  card.className = 'audio-card';
+  card.dataset.id = a.id;
+  card.innerHTML = `
+    <div class="audio-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+    </div>
+    <div class="audio-title">${a.title}</div>
+    <div class="audio-label">${a.description || 'Áudio especial'}</div>
+    <audio src="${a.file_url}" controls></audio>
+    <button class="aud-del-btn" onclick="deleteAudio(${a.id})">✕ Remover</button>`;
+  document.getElementById('audiosGrid').appendChild(card);
+}
+
+// ══════════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════════
+function formatDate(s) {
+  if (!s) return '';
+  try { const [y,m,d] = s.split('-'); return `${d}/${m}/${y}`; } catch(e) { return s; }
+}
+
+function updateEmpty(id, count) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = count > 0 ? 'none' : '';
+}
+
+function previewFile(input, previewId) {
+  const f = input.files[0];
+  if (f) document.getElementById(previewId).textContent = '✓ ' + f.name;
+}
+
+function resetFields(ids, prevIds) {
+  ids.forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  prevIds.forEach(id => { const el = document.getElementById(id); if(el) el.textContent = ''; });
+}
+
+function showProgress(id) { document.getElementById(id).style.display = 'block'; }
+function hideProgress(id) { document.getElementById(id).style.display = 'none'; }
+function updateProgress(fillId, textId, pct) {
+  document.getElementById(fillId).style.width = pct + '%';
+  document.getElementById(textId).textContent = `Enviando... ${pct}%`;
+}
+
+function setBtn(id, disabled) { document.getElementById(id).disabled = disabled; }
+
+function showUploadStatus(msg) {
+  const el = document.getElementById('uploadStatus');
+  el.textContent = msg; el.classList.add('show');
+}
+function hideUploadStatus() {
+  document.getElementById('uploadStatus').classList.remove('show');
+}
+
+// FAB
+function toggleFab() {
+  fabOpen = !fabOpen;
+  document.getElementById('fabMenu').classList.toggle('open', fabOpen);
+  document.getElementById('fabIcon').innerHTML = fabOpen
+    ? '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'
+    : '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>';
+}
+function closeFab() {
+  fabOpen = false;
+  document.getElementById('fabMenu').classList.remove('open');
+  document.getElementById('fabIcon').innerHTML = '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>';
+}
+
+// Modals
+function openModal(id) { closeFab(); document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('open');
+});
+
+// Notify
+function notify(msg) {
+  const n = document.getElementById('notif');
+  n.textContent = msg; n.classList.add('show');
+  setTimeout(() => n.classList.remove('show'), 2800);
+}
+
+// Scroll reveal
+function initScrollReveal() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }});
+  }, { threshold: .1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+}
+
+function openSQLModal() {
+  document.getElementById('sqlTextarea').value = SQL_SETUP;
+  document.getElementById('sqlModal').classList.add('open');
+}
+
+function selectAllSQL() {
+  const ta = document.getElementById('sqlTextarea');
+  ta.focus();
+  ta.select();
+  // Tenta copiar após selecionar
+  try {
+    document.execCommand('copy');
+    document.getElementById('sqlCopied').style.display = 'inline';
+    setTimeout(() => document.getElementById('sqlCopied').style.display = 'none', 2500);
+  } catch(e) {}
+}
+
+// Também expor o SQL via botão "Ver SQL"
+window.addEventListener('DOMContentLoaded', () => {
+  const url = localStorage.getItem('sb_url');
+  const key = localStorage.getItem('sb_key');
+  if (url && key) {
+    SB_URL = url; SB_KEY = key;
+    document.getElementById('setupScreen').style.display = 'none';
+    startApp();
+  }
+});
+</script>
+</body>
+</html>
