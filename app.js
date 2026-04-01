@@ -248,7 +248,18 @@ async function startApp() {
     document.getElementById('heroName').textContent = cfg.name || '—';
     document.getElementById('heroDates').textContent = cfg.dates || '';
     document.getElementById('heroQuote').textContent = cfg.quote || '';
-    document.getElementById('heroBio').textContent = cfg.bio || '';
+    
+    // Format bio with paragraphs
+    const bioText = cfg.bio || '';
+    if (bioText) {
+      const formattedBio = bioText.split('\n').filter(p => p.trim() !== '').map(p => `<p>${escapeHTML(p)}</p>`).join('');
+      document.getElementById('heroBio').innerHTML = formattedBio;
+      document.getElementById('bioSection').style.display = 'block';
+    } else {
+      document.getElementById('heroBio').innerHTML = '';
+      document.getElementById('bioSection').style.display = 'none';
+    }
+    
     document.getElementById('footerName').textContent = cfg.name || '—';
 
     if (cfg.hero_photo) {
@@ -340,7 +351,20 @@ function openHeroEdit() {
   document.getElementById('editName').value = document.getElementById('heroName').textContent;
   document.getElementById('editDates').value = document.getElementById('heroDates').textContent;
   document.getElementById('editQuote').value = document.getElementById('heroQuote').textContent;
-  document.getElementById('editBio').value = document.getElementById('heroBio').textContent;
+  
+  // Get raw text for editing (convert <p> back to newlines)
+  let rawBio = '';
+  const bioEl = document.getElementById('heroBio');
+  if (bioEl.innerHTML) {
+    const paragraphs = bioEl.querySelectorAll('p');
+    if (paragraphs.length > 0) {
+      rawBio = Array.from(paragraphs).map(p => p.textContent).join('\n\n');
+    } else {
+      rawBio = bioEl.textContent;
+    }
+  }
+  document.getElementById('editBio').value = rawBio;
+  
   openModal('heroEditModal');
 }
 
@@ -399,7 +423,17 @@ async function saveHeroInfo() {
     document.getElementById('heroName').textContent = name;
     document.getElementById('heroDates').textContent = dates;
     document.getElementById('heroQuote').textContent = quote;
-    document.getElementById('heroBio').textContent = bio;
+    
+    // Format bio with paragraphs
+    if (bio) {
+      const formattedBio = bio.split('\n').filter(p => p.trim() !== '').map(p => `<p>${escapeHTML(p)}</p>`).join('');
+      document.getElementById('heroBio').innerHTML = formattedBio;
+      document.getElementById('bioSection').style.display = 'block';
+    } else {
+      document.getElementById('heroBio').innerHTML = '';
+      document.getElementById('bioSection').style.display = 'none';
+    }
+    
     document.getElementById('footerName').textContent = name;
     if (hero_photo) {
       document.getElementById('heroImg').src = hero_photo;

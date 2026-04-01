@@ -461,17 +461,55 @@ footer{
 /* ══════════════════════════════════════════════
    BIOGRAFIA
 ════════════════════════════════════════════════ */
-.hero-bio {
+.bio-section {
+  padding: 40px 20px;
+  background: linear-gradient(to bottom, transparent, rgba(212, 175, 55, 0.03), transparent);
+}
+
+.bio-container {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.bio-container::before {
+  content: '“';
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  font-family: 'Playfair Display', serif;
+  font-size: 80px;
+  color: var(--gold);
+  opacity: 0.15;
+  line-height: 1;
+}
+
+.bio-content {
   font-family: 'Jost', sans-serif;
-  font-size: clamp(14px, 2vw, 16px);
+  font-size: clamp(15px, 2vw, 17px);
   color: var(--text-soft);
-  max-width: 720px;
-  line-height: 1.8;
-  margin: 24px auto 0;
-  opacity: 0;
-  animation: fadeUp 1.2s ease forwards 1.3s;
+  line-height: 2;
   text-align: justify;
-  white-space: pre-wrap;
+  animation: fadeUp 1.2s ease forwards 1.3s;
+}
+
+.bio-content p {
+  margin-bottom: 1.5em;
+  text-indent: 2em;
+}
+
+.bio-content p:first-child {
+  text-indent: 0;
+}
+
+.bio-content p:first-child::first-letter {
+  font-family: 'Playfair Display', serif;
+  font-size: 3em;
+  color: var(--gold);
+  float: left;
+  line-height: 0.8;
+  margin-right: 8px;
+  margin-top: 4px;
 }
 
 /* ══════════════════════════════════════════════
