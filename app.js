@@ -258,8 +258,10 @@ async function startApp() {
       // Add hero photo to bio section
       if (cfg.hero_photo) {
         const bioPhoto = document.getElementById('bioPhoto');
-        bioPhoto.src = cfg.hero_photo;
-        bioPhoto.style.display = 'block';
+        if (bioPhoto) {
+          bioPhoto.src = cfg.hero_photo;
+          bioPhoto.style.display = 'block';
+        }
       }
       
       document.getElementById('bioSection').style.display = 'block';
