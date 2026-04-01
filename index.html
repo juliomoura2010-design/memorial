@@ -122,9 +122,15 @@
   </div>
 
   <!-- Ambient Music Control -->
-  <button class="music-control" id="musicControl" onclick="toggleMusic()" style="display: none;">
-    <span id="musicIcon">🎵</span>
-  </button>
+  <div class="music-control-wrapper" id="musicControlWrapper" style="display: none;">
+    <button class="music-control" id="musicControl" onclick="toggleMusic()">
+      <span id="musicIcon">🎵</span>
+    </button>
+    <div class="music-volume-panel" id="musicVolumePanel">
+      <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="50" oninput="setVolume(this.value)">
+      <span class="volume-label" id="volumeLabel">50%</span>
+    </div>
+  </div>
   <audio id="ambientMusic" loop></audio>
 
   <!-- HERO -->
@@ -146,10 +152,13 @@
     <p class="hero-quote" id="heroQuote">—</p>
   </section>
 
-  <!-- BIOGRAPHY SECTION -->
+  <!-- BIOGRAPHY SECTION (Magazine Style) -->
   <section class="section reveal bio-section" id="bioSection" style="display: none;">
     <div class="bio-container">
-      <div class="bio-content" id="heroBio"></div>
+      <div class="bio-magazine">
+        <div class="bio-text" id="heroBio"></div>
+        <div class="bio-images" id="bioImages"></div>
+      </div>
     </div>
   </section>
 

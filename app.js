@@ -249,11 +249,39 @@ async function startApp() {
     document.getElementById('heroDates').textContent = cfg.dates || '';
     document.getElementById('heroQuote').textContent = cfg.quote || '';
     
-    // Format bio with paragraphs
+    // Format bio with paragraphs and add images from memories
     const bioText = cfg.bio || '';
     if (bioText) {
       const formattedBio = bioText.split('\n').filter(p => p.trim() !== '').map(p => `<p>${escapeHTML(p)}</p>`).join('');
       document.getElementById('heroBio').innerHTML = formattedBio;
+      
+      // Add first 3 memories as images in bio section
+      const bioImagesContainer = document.getElementById('bioImages');
+      bioImagesContainer.innerHTML = '';
+      const memoriesToShow = memories.slice(0, 3);
+      memoriesToShow.forEach(m => {
+        if (m.type === 'photo' || m.type === 'video') {
+          const item = document.createElement('div');
+          item.className = 'bio-image-item';
+          const fileUrl = encodeURI(m.file_url || '');
+          const caption = escapeHTML(m.caption || '');
+          const safeCaption = caption.replace(/'/g, "\\'");
+          
+          if (m.type === 'photo') {
+            item.innerHTML = `
+              <img src="${fileUrl}" alt="${caption}" loading="lazy" onclick="openLightbox('${fileUrl}', 'photo', '${safeCaption}')">
+              ${caption ? `<div class="bio-image-caption">${caption}</div>` : ''}
+            `;
+          } else {
+            item.innerHTML = `
+              <video src="${fileUrl}" onclick="openLightbox('${fileUrl}', 'video', '${safeCaption}')"></video>
+              ${caption ? `<div class="bio-image-caption">${caption}</div>` : ''}
+            `;
+          }
+          bioImagesContainer.appendChild(item);
+        }
+      });
+      
       document.getElementById('bioSection').style.display = 'block';
     } else {
       document.getElementById('heroBio').innerHTML = '';
@@ -271,7 +299,10 @@ async function startApp() {
     if (cfg.ambient_music) {
       const audio = document.getElementById('ambientMusic');
       audio.src = cfg.ambient_music;
-      document.getElementById('musicControl').style.display = 'flex';
+      audio.volume = 0.5; // Set initial volume to 50%
+      document.getElementById('musicControlWrapper').style.display = 'flex';
+      document.getElementById('volumeSlider').value = 50;
+      document.getElementById('volumeLabel').textContent = '50%';
       
       // Try to autoplay (might be blocked by browser policy)
       // We add a one-time click listener to the document to start music if autoplay fails
@@ -750,6 +781,14 @@ function toggleMusic() {
     control.classList.remove('playing');
     icon.textContent = '🔇';
   }
+}
+
+function setVolume(value) {
+  const audio = document.getElementById('ambientMusic');
+  const volumeLabel = document.getElementById('volumeLabel');
+  const volumePercent = Math.round(value);
+  audio.volume = volumePercent / 100;
+  volumeLabel.textContent = volumePercent + '%';
 }
 
 function removeMusic() {
