@@ -15,7 +15,9 @@ create table if not exists memorial_config (
   name text default 'Nome da Pessoa Amada',
   dates text default '',
   quote text default '',
+  bio text default '',
   hero_photo text default '',
+  ambient_music text default '',
   admin_pass text default 'admin123',
   constraint single_row check (id = 1)
 );
@@ -246,12 +248,29 @@ async function startApp() {
     document.getElementById('heroName').textContent = cfg.name || '—';
     document.getElementById('heroDates').textContent = cfg.dates || '';
     document.getElementById('heroQuote').textContent = cfg.quote || '';
+    document.getElementById('heroBio').textContent = cfg.bio || '';
     document.getElementById('footerName').textContent = cfg.name || '—';
 
     if (cfg.hero_photo) {
       document.getElementById('heroImg').src = cfg.hero_photo;
       document.getElementById('heroImg').style.display = 'block';
       document.getElementById('heroPlaceholder').style.display = 'none';
+    }
+
+    if (cfg.ambient_music) {
+      const audio = document.getElementById('ambientMusic');
+      audio.src = cfg.ambient_music;
+      document.getElementById('musicControl').style.display = 'flex';
+      
+      // Try to autoplay (might be blocked by browser policy)
+      // We add a one-time click listener to the document to start music if autoplay fails
+      const playMusic = () => {
+        audio.play().then(() => {
+          document.getElementById('musicControl').classList.add('playing');
+          document.removeEventListener('click', playMusic);
+        }).catch(e => console.log("Autoplay prevented by browser"));
+      };
+      document.addEventListener('click', playMusic);
     }
 
     // Render content
@@ -321,16 +340,20 @@ function openHeroEdit() {
   document.getElementById('editName').value = document.getElementById('heroName').textContent;
   document.getElementById('editDates').value = document.getElementById('heroDates').textContent;
   document.getElementById('editQuote').value = document.getElementById('heroQuote').textContent;
+  document.getElementById('editBio').value = document.getElementById('heroBio').textContent;
   openModal('heroEditModal');
 }
 
 async function saveHeroInfo() {
   const name = document.getElementById('editName').value.trim();
-  const dates = document.getElementById('editDates').value.trim();
+   const dates = document.getElementById('editDates').value.trim();
   const quote = document.getElementById('editQuote').value.trim();
+  const bio = document.getElementById('editBio').value.trim();
   const heroFile = document.getElementById('editHeroFile').files[0];
+  const musicFile = document.getElementById('editMusicFile').files[0];
 
   let hero_photo = undefined;
+  let ambient_music = undefined;
 
   if (heroFile) {
     showUploadStatus('Enviando foto...');
@@ -345,8 +368,22 @@ async function saveHeroInfo() {
     hideUploadStatus();
   }
 
-  const body = { name, dates, quote };
+  if (musicFile) {
+    showUploadStatus('Enviando música...');
+    try {
+      const path = `music_${Date.now()}.${musicFile.name.split('.').pop()}`;
+      ambient_music = await sbUpload('memorial-media', path, musicFile, null);
+    } catch(e) {
+      notify('Erro ao enviar música: ' + e.message.substring(0,60));
+      hideUploadStatus();
+      return;
+    }
+    hideUploadStatus();
+  }
+
+  const body = { name, dates, quote, bio };
   if (hero_photo) body.hero_photo = hero_photo;
+  if (ambient_music) body.ambient_music = ambient_music;
 
   try {
     await sbFetch('/rest/v1/memorial_config?id=eq.1', {
@@ -356,11 +393,20 @@ async function saveHeroInfo() {
     document.getElementById('heroName').textContent = name;
     document.getElementById('heroDates').textContent = dates;
     document.getElementById('heroQuote').textContent = quote;
+    document.getElementById('heroBio').textContent = bio;
     document.getElementById('footerName').textContent = name;
     if (hero_photo) {
       document.getElementById('heroImg').src = hero_photo;
       document.getElementById('heroImg').style.display = 'block';
       document.getElementById('heroPlaceholder').style.display = 'none';
+    }
+    if (ambient_music) {
+      const audio = document.getElementById('ambientMusic');
+      audio.src = ambient_music;
+      document.getElementById('musicControl').style.display = 'flex';
+      audio.play().then(() => {
+        document.getElementById('musicControl').classList.add('playing');
+      }).catch(e => console.log("Autoplay prevented"));
     }
     closeModal('heroEditModal');
     notify('Memorial atualizado ✦');
@@ -547,9 +593,10 @@ function renderMemory(m) {
   const caption = escapeHTML(m.caption || '');
   const fileUrl = encodeURI(m.file_url || '');
   
+  const safeCaption = caption.replace(/'/g, "\\'");
   const media = m.type === 'photo'
-    ? `<img class="memory-card-media" src="${fileUrl}" alt="${caption}" loading="lazy">`
-    : `<video class="memory-card-media" src="${fileUrl}" controls></video>`;
+    ? `<img class="memory-card-media" src="${fileUrl}" alt="${caption}" loading="lazy" onclick="openLightbox('${fileUrl}', 'photo', '${safeCaption}')">`
+    : `<video class="memory-card-media" src="${fileUrl}" onclick="openLightbox('${fileUrl}', 'video', '${safeCaption}')"></video>`;
   card.innerHTML = `
     ${media}
     <div class="memory-card-body">
@@ -630,6 +677,27 @@ function updateEmpty(id, count) {
 function previewFile(input, previewId) {
   const f = input.files[0];
   if (f) document.getElementById(previewId).textContent = '✓ ' + f.name;
+}
+
+function previewAudioFile(input, previewId) {
+  const f = input.files[0];
+  if (f) document.getElementById(previewId).textContent = '🎵 ' + f.name;
+}
+
+function toggleMusic() {
+  const audio = document.getElementById('ambientMusic');
+  const control = document.getElementById('musicControl');
+  const icon = document.getElementById('musicIcon');
+  
+  if (audio.paused) {
+    audio.play();
+    control.classList.add('playing');
+    icon.textContent = '🎵';
+  } else {
+    audio.pause();
+    control.classList.remove('playing');
+    icon.textContent = '🔇';
+  }
 }
 
 function resetFields(ids, prevIds) {
@@ -727,6 +795,59 @@ window.addEventListener('DOMContentLoaded', () => {
       SB_URL = url; SB_KEY = key;
       document.getElementById('setupScreen').style.display = 'none';
       startApp();
+    }
+  }
+});
+// ══════════════════════════════════════════════════════════
+// LIGHTBOX
+// ══════════════════════════════════════════════════════════
+function openLightbox(url, type, caption) {
+  const modal = document.getElementById('lightboxModal');
+  const content = document.getElementById('lightboxContent');
+  const captionEl = document.getElementById('lightboxCaption');
+  
+  content.innerHTML = '';
+  
+  if (type === 'photo') {
+    const img = document.createElement('img');
+    img.src = url;
+    img.alt = caption || '';
+    content.appendChild(img);
+  } else if (type === 'video') {
+    const video = document.createElement('video');
+    video.src = url;
+    video.controls = true;
+    video.autoplay = true;
+    content.appendChild(video);
+  }
+  
+  captionEl.textContent = caption || '';
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden'; // Prevent scrolling
+}
+
+function closeLightbox(e) {
+  // Close if clicking the overlay or the close button
+  if (e.target.id === 'lightboxModal' || e.target.classList.contains('lightbox-close')) {
+    const modal = document.getElementById('lightboxModal');
+    const content = document.getElementById('lightboxContent');
+    
+    modal.classList.remove('active');
+    document.body.style.overflow = ''; // Restore scrolling
+    
+    // Stop video if playing
+    setTimeout(() => {
+      content.innerHTML = '';
+    }, 300);
+  }
+}
+
+// Close lightbox on Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    const modal = document.getElementById('lightboxModal');
+    if (modal.classList.contains('active')) {
+      closeLightbox({ target: modal });
     }
   }
 });

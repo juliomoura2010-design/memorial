@@ -121,6 +121,12 @@
     </div>
   </div>
 
+  <!-- Ambient Music Control -->
+  <button class="music-control" id="musicControl" onclick="toggleMusic()" style="display: none;">
+    <span id="musicIcon">🎵</span>
+  </button>
+  <audio id="ambientMusic" loop></audio>
+
   <!-- HERO -->
   <section class="hero">
     <div class="hero-ornament">✦ In Memoriam ✦</div>
@@ -138,6 +144,7 @@
     <div class="hero-dates" id="heroDates">—</div>
     <div class="hero-divider"></div>
     <p class="hero-quote" id="heroQuote">—</p>
+    <div class="hero-bio" id="heroBio"></div>
   </section>
 
   <!-- MEMORIES -->
@@ -385,6 +392,10 @@
       <textarea class="form-textarea" id="editQuote"></textarea>
     </div>
     <div class="form-group">
+      <label class="form-label">Biografia</label>
+      <textarea class="form-textarea" id="editBio" placeholder="Uma breve história de vida..." style="min-height: 100px; resize: vertical;"></textarea>
+    </div>
+    <div class="form-group">
       <label class="form-label">Foto principal</label>
       <div class="file-drop">
         <input type="file" accept="image/*" id="editHeroFile" onchange="previewFile(this,'editHeroPreview')">
@@ -393,11 +404,27 @@
         <div class="file-preview" id="editHeroPreview"></div>
       </div>
     </div>
+    <div class="form-group">
+      <label class="form-label">Música Ambiente (Opcional)</label>
+      <div class="file-drop">
+        <input type="file" accept="audio/*" id="editMusicFile" onchange="previewAudioFile(this,'editMusicPreview')">
+        <div class="file-drop-icon">🎵</div>
+        <div class="file-drop-text"><strong>Clique para escolher</strong> uma música de fundo</div>
+        <div class="file-preview" id="editMusicPreview" style="color: var(--gold); font-size: 14px; margin-top: 8px;"></div>
+      </div>
+    </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal('heroEditModal')">Cancelar</button>
       <button class="btn-save" onclick="saveHeroInfo()">Salvar</button>
     </div>
   </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox-overlay" id="lightboxModal" onclick="closeLightbox(event)">
+  <button class="lightbox-close" onclick="closeLightbox(event)">×</button>
+  <div class="lightbox-content" id="lightboxContent"></div>
+  <div class="lightbox-caption" id="lightboxCaption"></div>
 </div>
 
 <!-- SQL Fallback Modal -->
