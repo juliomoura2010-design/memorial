@@ -249,38 +249,18 @@ async function startApp() {
     document.getElementById('heroDates').textContent = cfg.dates || '';
     document.getElementById('heroQuote').textContent = cfg.quote || '';
     
-    // Format bio with paragraphs and add images from memories
+    // Format bio with paragraphs
     const bioText = cfg.bio || '';
     if (bioText) {
       const formattedBio = bioText.split('\n').filter(p => p.trim() !== '').map(p => `<p>${escapeHTML(p)}</p>`).join('');
       document.getElementById('heroBio').innerHTML = formattedBio;
       
-      // Add first 3 memories as images in bio section
-      const bioImagesContainer = document.getElementById('bioImages');
-      bioImagesContainer.innerHTML = '';
-      const memoriesToShow = memories.slice(0, 3);
-      memoriesToShow.forEach(m => {
-        if (m.type === 'photo' || m.type === 'video') {
-          const item = document.createElement('div');
-          item.className = 'bio-image-item';
-          const fileUrl = encodeURI(m.file_url || '');
-          const caption = escapeHTML(m.caption || '');
-          const safeCaption = caption.replace(/'/g, "\\'");
-          
-          if (m.type === 'photo') {
-            item.innerHTML = `
-              <img src="${fileUrl}" alt="${caption}" loading="lazy" onclick="openLightbox('${fileUrl}', 'photo', '${safeCaption}')">
-              ${caption ? `<div class="bio-image-caption">${caption}</div>` : ''}
-            `;
-          } else {
-            item.innerHTML = `
-              <video src="${fileUrl}" onclick="openLightbox('${fileUrl}', 'video', '${safeCaption}')"></video>
-              ${caption ? `<div class="bio-image-caption">${caption}</div>` : ''}
-            `;
-          }
-          bioImagesContainer.appendChild(item);
-        }
-      });
+      // Add hero photo to bio section
+      if (cfg.hero_photo) {
+        const bioPhoto = document.getElementById('bioPhoto');
+        bioPhoto.src = cfg.hero_photo;
+        bioPhoto.style.display = 'block';
+      }
       
       document.getElementById('bioSection').style.display = 'block';
     } else {
