@@ -254,16 +254,6 @@ async function startApp() {
     if (bioText) {
       const formattedBio = bioText.split('\n').filter(p => p.trim() !== '').map(p => `<p>${escapeHTML(p)}</p>`).join('');
       document.getElementById('heroBio').innerHTML = formattedBio;
-      
-      // Add hero photo to bio section
-      if (cfg.hero_photo) {
-        const bioPhoto = document.getElementById('bioPhoto');
-        if (bioPhoto) {
-          bioPhoto.src = cfg.hero_photo;
-          bioPhoto.style.display = 'block';
-        }
-      }
-      
       document.getElementById('bioSection').style.display = 'block';
     } else {
       document.getElementById('heroBio').innerHTML = '';
@@ -281,10 +271,7 @@ async function startApp() {
     if (cfg.ambient_music) {
       const audio = document.getElementById('ambientMusic');
       audio.src = cfg.ambient_music;
-      audio.volume = 0.5; // Set initial volume to 50%
-      document.getElementById('musicControlWrapper').style.display = 'flex';
-      document.getElementById('volumeSlider').value = 50;
-      document.getElementById('volumeLabel').textContent = '50%';
+      document.getElementById('musicControl').style.display = 'flex';
       
       // Try to autoplay (might be blocked by browser policy)
       // We add a one-time click listener to the document to start music if autoplay fails
@@ -763,14 +750,6 @@ function toggleMusic() {
     control.classList.remove('playing');
     icon.textContent = '🔇';
   }
-}
-
-function setVolume(value) {
-  const audio = document.getElementById('ambientMusic');
-  const volumeLabel = document.getElementById('volumeLabel');
-  const volumePercent = Math.round(value);
-  audio.volume = volumePercent / 100;
-  volumeLabel.textContent = volumePercent + '%';
 }
 
 function removeMusic() {
