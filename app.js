@@ -383,7 +383,13 @@ async function saveHeroInfo() {
 
   const body = { name, dates, quote, bio };
   if (hero_photo) body.hero_photo = hero_photo;
-  if (ambient_music) body.ambient_music = ambient_music;
+  
+  // Se removeMusicFlag for true, limpa a música. Se tiver arquivo novo, usa o arquivo novo.
+  if (window.removeMusicFlag) {
+    body.ambient_music = '';
+  } else if (ambient_music) {
+    body.ambient_music = ambient_music;
+  }
 
   try {
     await sbFetch('/rest/v1/memorial_config?id=eq.1', {
@@ -400,14 +406,26 @@ async function saveHeroInfo() {
       document.getElementById('heroImg').style.display = 'block';
       document.getElementById('heroPlaceholder').style.display = 'none';
     }
-    if (ambient_music) {
+    if (window.removeMusicFlag) {
+      const audio = document.getElementById('ambientMusic');
+      audio.pause();
+      audio.src = '';
+      document.getElementById('musicControl').style.display = 'none';
+      document.getElementById('musicControl').classList.remove('playing');
+      document.getElementById('musicIcon').textContent = '🔇';
+    } else if (ambient_music) {
       const audio = document.getElementById('ambientMusic');
       audio.src = ambient_music;
       document.getElementById('musicControl').style.display = 'flex';
       audio.play().then(() => {
         document.getElementById('musicControl').classList.add('playing');
+        document.getElementById('musicIcon').textContent = '🎵';
       }).catch(e => console.log("Autoplay prevented"));
     }
+    
+    // Reset flag
+    window.removeMusicFlag = false;
+    
     closeModal('heroEditModal');
     notify('Memorial atualizado ✦');
   } catch(e) {
@@ -698,6 +716,13 @@ function toggleMusic() {
     control.classList.remove('playing');
     icon.textContent = '🔇';
   }
+}
+
+function removeMusic() {
+  window.removeMusicFlag = true;
+  document.getElementById('editMusicFile').value = '';
+  document.getElementById('editMusicPreview').textContent = 'Música será removida ao salvar';
+  document.getElementById('editMusicPreview').style.color = '#e74c3c';
 }
 
 function resetFields(ids, prevIds) {
