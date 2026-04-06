@@ -122,9 +122,15 @@
   </div>
 
   <!-- Ambient Music Control -->
-  <button class="music-control" id="musicControl" onclick="toggleMusic()" style="display: none;">
-    <span id="musicIcon">🎵</span>
-  </button>
+  <div class="music-control-wrapper" id="musicControlWrapper" style="display: none;">
+    <button class="music-control" id="musicControl" onclick="toggleMusic()">
+      <span id="musicIcon">🎵</span>
+    </button>
+    <div class="music-volume-panel" id="musicVolumePanel">
+      <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="50" oninput="setVolume(this.value)">
+      <span class="volume-label" id="volumeLabel">50%</span>
+    </div>
+  </div>
   <audio id="ambientMusic" loop></audio>
 
   <!-- HERO -->
