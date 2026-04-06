@@ -147,7 +147,7 @@ body::before {
    HERO SECTION
 ════════════════════════════════════════════════ */
 .hero {
-  text-align:center;padding:40px 24px 60px;background:linear-gradient(to bottom, transparent, rgba(212, 175, 55, 0.05));
+  text-align:center;padding:40px 24px 20px;background:linear-gradient(to bottom, transparent, rgba(212, 175, 55, 0.05));
 }
 .hero-ornament {
   font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:.3em;
@@ -178,11 +178,11 @@ body::before {
 .hero-name em{font-style:italic}
 .hero-dates {
   font-family:'Jost',sans-serif;font-size:16px;color:var(--text-soft);
-  letter-spacing:.05em;margin-bottom:24px;
+  letter-spacing:.05em;margin-bottom:12px;
 }
 .hero-divider {
   width:60px;height:1px;background:linear-gradient(to right, transparent, var(--gold), transparent);
-  margin:24px auto;
+  margin:12px auto;
 }
 .hero-quote {
   font-family:'Playfair Display',serif;font-size:clamp(16px, 3vw, 20px);
@@ -217,7 +217,7 @@ body::before {
    BIOGRAFIA
 ════════════════════════════════════════════════ */
 .bio-section {
-  padding: 60px 20px;
+  padding: 20px 20px 60px;
   background: linear-gradient(to bottom, transparent, rgba(212, 175, 55, 0.03), transparent);
 }
 
