@@ -882,12 +882,25 @@ function openLightbox(url, type, caption) {
     const img = document.createElement('img');
     img.src = url;
     img.alt = caption || '';
+    img.style.maxWidth = '100%';
+    img.style.maxHeight = 'calc(100vh - 120px)';
+    img.style.width = 'auto';
+    img.style.height = 'auto';
+    img.style.objectFit = 'contain';
+    img.style.borderRadius = '4px';
+    img.style.display = 'block';
     content.appendChild(img);
   } else if (type === 'video') {
     const video = document.createElement('video');
     video.src = url;
     video.controls = true;
     video.autoplay = true;
+    video.style.maxWidth = '100%';
+    video.style.maxHeight = 'calc(100vh - 120px)';
+    video.style.width = 'auto';
+    video.style.height = 'auto';
+    video.style.borderRadius = '4px';
+    video.style.display = 'block';
     content.appendChild(video);
   }
   
