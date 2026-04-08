@@ -273,13 +273,16 @@ body::before {
   font-family: 'Jost', sans-serif;
   font-size: clamp(15px, 2vw, 17px);
   color: var(--text-soft);
-  line-height: 1.9;
+  line-height: 2.0;
   animation: fadeUp 1.2s ease forwards 1.4s;
 }
 
 .bio-text p {
-  margin-bottom: 1.3em;
+  margin-bottom: 1.2em;
   text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
+  -webkit-hyphens: auto;
 }
 
 .bio-text p:first-child {
@@ -328,7 +331,7 @@ body::before {
   
   .bio-text {
     font-size: 15px;
-    line-height: 1.8;
+    line-height: 2.0;
   }
   
   .bio-text p:first-child::first-letter {
@@ -345,6 +348,7 @@ body::before {
   
   .bio-text {
     font-size: 14px;
+    line-height: 1.9;
   }
   
   .bio-text p:first-child::first-letter {
