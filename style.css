@@ -273,16 +273,17 @@ body::before {
   font-family: 'Jost', sans-serif;
   font-size: clamp(15px, 2vw, 17px);
   color: var(--text-soft);
-  line-height: 2.0;
+  line-height: 2.2;
   animation: fadeUp 1.2s ease forwards 1.4s;
 }
 
 .bio-text p {
-  margin-bottom: 1.2em;
+  margin-bottom: 1.8em;
   text-align: justify;
   text-justify: inter-word;
   hyphens: auto;
   -webkit-hyphens: auto;
+  word-spacing: 0.05em;
 }
 
 .bio-text p:first-child {
