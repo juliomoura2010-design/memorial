@@ -269,7 +269,7 @@ body::before {
   box-shadow: 0 16px 50px rgba(212, 175, 55, 0.3);
 }
 
-.bio-text {
+.bio-content {
   font-family: 'Jost', sans-serif;
   font-size: clamp(15px, 2vw, 17px);
   color: var(--text-soft);
@@ -277,7 +277,7 @@ body::before {
   animation: fadeUp 1.2s ease forwards 1.4s;
 }
 
-.bio-text p {
+.bio-content p {
   margin-bottom: 1.8em;
   text-align: justify;
   text-justify: inter-word;
@@ -286,11 +286,11 @@ body::before {
   word-spacing: 0.05em;
 }
 
-.bio-text p:first-child {
+.bio-content p:first-child {
   text-indent: 0;
 }
 
-.bio-text p:first-child::first-letter {
+.bio-content p:first-child::first-letter {
   font-family: 'Playfair Display', serif;
   font-size: 4em;
   color: var(--gold);
@@ -330,12 +330,12 @@ body::before {
     height: 220px;
   }
   
-  .bio-text {
+  .bio-content {
     font-size: 15px;
     line-height: 2.0;
   }
   
-  .bio-text p:first-child::first-letter {
+  .bio-content p:first-child::first-letter {
     font-size: 3em;
   }
 }
@@ -347,12 +347,12 @@ body::before {
     border-width: 6px;
   }
   
-  .bio-text {
+  .bio-content {
     font-size: 14px;
     line-height: 1.9;
   }
   
-  .bio-text p:first-child::first-letter {
+  .bio-content p:first-child::first-letter {
     font-size: 2.5em;
   }
 }
