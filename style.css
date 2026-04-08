@@ -919,11 +919,13 @@ footer {
   padding: 20px;
 }
 
-.modal-overlay.active {
+.modal-overlay.active,
+.modal-overlay.open {
   display: flex;
 }
 
-.modal-box {
+.modal-box,
+.modal {
   background: var(--white);
   border-radius: 16px;
   padding: 32px;
@@ -940,6 +942,21 @@ footer {
   font-size: 24px;
   color: var(--deep-gold);
   margin-bottom: 24px;
+}
+
+.modal-sub {
+  font-family: 'Jost', sans-serif;
+  font-size: 14px;
+  color: var(--text-soft);
+  margin-top: -16px;
+  margin-bottom: 24px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
 }
 
 .modal-close {
