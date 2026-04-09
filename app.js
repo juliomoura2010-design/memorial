@@ -640,6 +640,7 @@ async function deleteAudio(id) {
 // RENDER
 // ══════════════════════════════════════════════════════════
 function renderMemory(m) {
+  // updated for new card structure
   document.getElementById('memoriesEmpty').style.display = 'none';
   const card = document.createElement('div');
   card.className = 'memory-card';
@@ -649,11 +650,18 @@ function renderMemory(m) {
   const fileUrl = encodeURI(m.file_url || '');
   
   const safeCaption = caption.replace(/'/g, "\\'");
+  const videoOverlay = m.type === 'video' ? `
+    <div class="video-play-overlay">
+      <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="11" fill="rgba(0,0,0,0.45)"/><polygon points="9.5,7.5 17.5,12 9.5,16.5" fill="white"/></svg>
+    </div>` : '';
   const media = m.type === 'photo'
     ? `<img class="memory-card-media" src="${fileUrl}" alt="${caption}" loading="lazy" onclick="openLightbox('${fileUrl}', 'photo', '${safeCaption}')">`
     : `<video class="memory-card-media" src="${fileUrl}" onclick="openLightbox('${fileUrl}', 'video', '${safeCaption}')"></video>`;
   card.innerHTML = `
-    ${media}
+    <div class="memory-card-media-wrap">
+      ${media}
+      ${videoOverlay}
+    </div>
     <div class="memory-card-body">
       ${dateStr ? `<div class="memory-card-date">${escapeHTML(dateStr)}</div>` : ''}
       ${caption ? `<div class="memory-card-caption">${caption}</div>` : ''}
@@ -690,19 +698,99 @@ function renderAudio(a) {
   card.className = 'audio-card';
   card.dataset.id = a.id;
   
-  const title = escapeHTML(a.title || '');
+  const title = escapeHTML(a.title || 'Áudio');
   const desc = escapeHTML(a.description || 'Áudio especial');
   const fileUrl = encodeURI(a.file_url || '');
+  const uid = 'ap_' + a.id;
   
   card.innerHTML = `
-    <div class="audio-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+    <div class="audio-card-header">
+      <div class="audio-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      </div>
+      <div class="audio-info">
+        <div class="audio-title">${title}</div>
+        <div class="audio-label">${desc}</div>
+      </div>
     </div>
-    <div class="audio-title">${title}</div>
-    <div class="audio-label">${desc}</div>
-    <audio src="${fileUrl}" controls></audio>
+    <audio id="${uid}" src="${fileUrl}" preload="metadata"></audio>
+    <div class="custom-player">
+      <div class="player-controls">
+        <button class="player-play-btn" onclick="toggleAudioPlayer('${uid}', this)" aria-label="Play/Pause">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+        </button>
+        <div class="player-progress-wrap">
+          <div class="player-progress-bar" onclick="seekAudio('${uid}', event, this)">
+            <div class="player-progress-fill" id="fill_${uid}"></div>
+          </div>
+          <div class="player-time">
+            <span id="cur_${uid}">0:00</span>
+            <span id="dur_${uid}">0:00</span>
+          </div>
+        </div>
+      </div>
+    </div>
     <button class="aud-del-btn" onclick="deleteAudio(${a.id})">✕ Remover</button>`;
+  
   document.getElementById('audiosGrid').appendChild(card);
+  
+  // Bind audio events
+  const audioEl = document.getElementById(uid);
+  const fillEl = document.getElementById('fill_' + uid);
+  const curEl = document.getElementById('cur_' + uid);
+  const durEl = document.getElementById('dur_' + uid);
+  
+  audioEl.addEventListener('loadedmetadata', () => {
+    durEl.textContent = fmtTime(audioEl.duration);
+  });
+  audioEl.addEventListener('timeupdate', () => {
+    if (audioEl.duration) {
+      fillEl.style.width = (audioEl.currentTime / audioEl.duration * 100) + '%';
+      curEl.textContent = fmtTime(audioEl.currentTime);
+    }
+  });
+  audioEl.addEventListener('ended', () => {
+    const btn = card.querySelector('.player-play-btn');
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>';
+    fillEl.style.width = '0%';
+    curEl.textContent = '0:00';
+    audioEl.currentTime = 0;
+  });
+}
+
+function toggleAudioPlayer(uid, btn) {
+  const audio = document.getElementById(uid);
+  if (!audio) return;
+  if (audio.paused) {
+    // Pause all other players
+    document.querySelectorAll('.audio-card audio').forEach(a => {
+      if (a.id !== uid && !a.paused) {
+        a.pause();
+        const otherBtn = document.querySelector(`[onclick*="'${a.id}'"]`);
+        if (otherBtn) otherBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>';
+      }
+    });
+    audio.play();
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+  } else {
+    audio.pause();
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>';
+  }
+}
+
+function seekAudio(uid, event, bar) {
+  const audio = document.getElementById(uid);
+  if (!audio || !audio.duration) return;
+  const rect = bar.getBoundingClientRect();
+  const pct = (event.clientX - rect.left) / rect.width;
+  audio.currentTime = pct * audio.duration;
+}
+
+function fmtTime(s) {
+  if (isNaN(s)) return '0:00';
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60);
+  return m + ':' + (sec < 10 ? '0' : '') + sec;
 }
 
 // ══════════════════════════════════════════════════════════
