@@ -486,6 +486,7 @@ body::before {
   inset: 0;
   background: rgba(0,0,0,0);
   transition: background 0.3s ease;
+  pointer-events: none; /* Não bloqueia cliques na imagem */
 }
 
 .memory-card:hover .memory-card-media-wrap::after {
@@ -511,8 +512,8 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: center;
-  pointer-events: none;
-  z-index: 1;
+  pointer-events: none; /* Deixa cliques passarem para o vídeo abaixo */
+  z-index: 2;
 }
 
 .video-play-overlay svg {
