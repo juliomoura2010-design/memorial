@@ -573,6 +573,97 @@ body::before {
 }
 
 /* ══════════════════════════════════════════════
+   PUBLIC MESSAGE FORM
+════════════════════════════════════════════════ */
+.public-msg-form {
+  max-width: 700px;
+  margin: 0 auto 48px;
+}
+
+.public-msg-form-inner {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 4px 20px var(--shadow);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.public-msg-form-inner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(to right, var(--gold), var(--deep-gold));
+}
+
+.public-msg-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  color: var(--deep-gold);
+  font-weight: 400;
+  margin-bottom: 6px;
+}
+
+.public-msg-sub {
+  font-size: 13px;
+  color: var(--text-soft);
+  margin-bottom: 24px;
+  font-style: italic;
+}
+
+.public-msg-fields {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.public-msg-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.btn-send-msg {
+  padding: 12px 28px;
+  background: linear-gradient(135deg, var(--gold), var(--deep-gold));
+  color: var(--white);
+  border: none;
+  border-radius: 30px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(212, 175, 55, 0.3);
+}
+
+.btn-send-msg:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+}
+
+.btn-send-msg:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 600px) {
+  .public-msg-fields {
+    grid-template-columns: 1fr;
+  }
+  .public-msg-form-inner {
+    padding: 24px 20px;
+  }
+}
+
+/* ══════════════════════════════════════════════
    MESSAGES
 ════════════════════════════════════════════════ */
 .messages-list {

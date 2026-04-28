@@ -330,6 +330,7 @@ function loginAdmin() {
     document.getElementById('adminToggleBtn').style.display = 'none';
     document.getElementById('heroPlaceholderText').textContent = 'Clique p/ foto';
     closeModal('loginModal');
+    refreshMessageDeleteBtns();
     notify('Bem-vindo, admin ✦');
   } else {
     notify('Senha incorreta');
@@ -344,6 +345,7 @@ function logoutAdmin() {
   document.getElementById('adminToggleBtn').style.display = 'flex';
   document.getElementById('heroPlaceholderText').textContent = 'Foto';
   closeFab();
+  refreshMessageDeleteBtns();
   notify('Saiu do modo admin');
 }
 
@@ -557,7 +559,7 @@ async function addVideo() {
 }
 
 // ══════════════════════════════════════════════════════════
-// ADD MESSAGE
+// ADD MESSAGE (admin modal - mantido para compatibilidade)
 // ══════════════════════════════════════════════════════════
 async function addMessage() {
   const author = document.getElementById('msgAuthor').value.trim() || 'Anônimo';
@@ -577,6 +579,40 @@ async function addMessage() {
     notify('Mensagem guardada ✦');
   } catch(e) {
     notify('Erro: ' + e.message.substring(0,80));
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// SEND PUBLIC MESSAGE (visitantes)
+// ══════════════════════════════════════════════════════════
+async function sendPublicMessage() {
+  const author = document.getElementById('pubMsgAuthor').value.trim() || 'Anônimo';
+  const message = document.getElementById('pubMsgText').value.trim();
+  if (!message) { notify('Escreva uma mensagem antes de publicar'); return; }
+
+  const btn = document.querySelector('.btn-send-msg');
+  if (btn) { btn.disabled = true; btn.textContent = 'Publicando...'; }
+
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const [rec] = await sbFetch('/rest/v1/memorial_messages', {
+      method: 'POST',
+      body: JSON.stringify({ author, message, item_date: today })
+    });
+    renderMessage(rec);
+    updateEmpty('messagesEmpty', 1);
+    // Limpa os campos
+    document.getElementById('pubMsgAuthor').value = '';
+    document.getElementById('pubMsgText').value = '';
+    notify('Mensagem publicada com carinho ✦');
+    // Rola suavemente para a mensagem publicada
+    setTimeout(() => {
+      document.getElementById('messagesList').lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 300);
+  } catch(e) {
+    notify('Erro ao publicar: ' + e.message.substring(0,80));
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Publicar Mensagem ✶'; }
   }
 }
 
@@ -681,15 +717,37 @@ function renderMessage(m) {
   const author = escapeHTML(m.author || 'Anônimo');
   const message = escapeHTML(m.message || '');
   
+  // Botão excluir só aparece para admin
+  const delBtn = isAdmin ? `<button class="msg-del-btn" onclick="deleteMessage(${m.id})">✕ Remover</button>` : '';
+  
   item.innerHTML = `
     <div class="message-avatar">${escapeHTML(initial)}</div>
     <div class="message-bubble">
       <div class="message-author">${author}</div>
       ${dateStr ? `<div class="message-date-tag">${escapeHTML(dateStr)}</div>` : ''}
       <div class="message-text">${message}</div>
-      <button class="msg-del-btn" onclick="deleteMessage(${m.id})">✕ Remover</button>
+      ${delBtn}
     </div>`;
   document.getElementById('messagesList').appendChild(item);
+}
+
+// Atualiza botões de excluir mensagem ao entrar/sair do modo admin
+function refreshMessageDeleteBtns() {
+  document.querySelectorAll('.message-item').forEach(item => {
+    const id = item.dataset.id;
+    const bubble = item.querySelector('.message-bubble');
+    // Remove botão existente
+    const existing = bubble.querySelector('.msg-del-btn');
+    if (existing) existing.remove();
+    // Adiciona se admin
+    if (isAdmin) {
+      const btn = document.createElement('button');
+      btn.className = 'msg-del-btn';
+      btn.textContent = '✕ Remover';
+      btn.onclick = () => deleteMessage(id);
+      bubble.appendChild(btn);
+    }
+  });
 }
 
 function renderAudio(a) {

@@ -181,10 +181,32 @@
       <h2 class="section-title">Mensagens & <em>Palavras</em></h2>
       <div class="section-line"></div>
     </div>
+
+    <!-- Formulário público de mensagem -->
+    <div class="public-msg-form" id="publicMsgForm">
+      <div class="public-msg-form-inner">
+        <h3 class="public-msg-title">Deixe sua mensagem</h3>
+        <p class="public-msg-sub">Palavras de carinho que ficam para sempre</p>
+        <div class="public-msg-fields">
+          <div class="form-group">
+            <label class="form-label">Seu nome</label>
+            <input type="text" class="form-input" id="pubMsgAuthor" placeholder="Quem escreve...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Mensagem</label>
+            <textarea class="form-textarea" id="pubMsgText" rows="4" placeholder="Escreva suas palavras, memórias, saudades..."></textarea>
+          </div>
+        </div>
+        <div class="public-msg-actions">
+          <button class="btn-send-msg" onclick="sendPublicMessage()">Publicar Mensagem ✶</button>
+        </div>
+      </div>
+    </div>
+
     <div class="messages-list" id="messagesList">
       <div class="empty-state" id="messagesEmpty">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        <p>Nenhuma mensagem ainda.<br>Deixe palavras de amor e saudade.</p>
+        <p>Nenhuma mensagem ainda.<br>Seja o primeiro a deixar palavras de amor e saudade.</p>
       </div>
     </div>
   </section>
